@@ -149,15 +149,21 @@ class InstagramHumanScraper {
         timeout: 30000 
       });
       
-      // Wait for content to load
-      await this.page.waitForTimeout(5000);
+      // Wait for posts to load - Instagram specific selectors
+      console.log('   ⏳ Waiting for posts to load...');
+      await this.page.waitForTimeout(8000);
+      
+      // Try to wait for at least one post to appear
+      try {
+        await this.page.waitForSelector('a[href*="/p/"]', { timeout: 15000 });
+      } catch (e) {
+        console.log('   ⚠️  Could not find posts with standard selector, trying alternatives...');
+      }
       
     } catch (error) {
       console.log(`   ⚠️  Timeout loading profile, trying to continue...`);
       await this.page.waitForTimeout(5000);
     }
-    
-    await this.randomDelay(2000, 3000);
     
     const postLinksSet = new Set();
     
@@ -165,13 +171,42 @@ class InstagramHumanScraper {
     for (let i = 0; i < scrollRounds; i++) {
       console.log(`📜 Scroll round ${i + 1}/${scrollRounds}`);
       
-      // Get current post links
-      const links = await this.page.locator('article a[href*="/p/"]').all();
+      // Try multiple selectors to find posts
+      let allLinks = [];
       
-      for (const link of links) {
-        const href = await link.getAttribute('href');
-        if (href && href.includes('/p/')) {
-          postLinksSet.add(href);
+      // Method 1: Standard Instagram post links
+      try {
+        const links1 = await this.page.locator('a[href*="/p/"]').all();
+        allLinks = [...allLinks, ...links1];
+      } catch (e) {}
+      
+      // Method 2: Links within article elements
+      try {
+        const links2 = await this.page.locator('article a[href*="/p/"]').all();
+        allLinks = [...allLinks, ...links2];
+      } catch (e) {}
+      
+      // Method 3: Any link containing /p/ in href
+      try {
+        const links3 = await this.page.locator('a[href*="/p/"]').all();
+        allLinks = [...allLinks, ...links3];
+      } catch (e) {}
+      
+      // Debug: Show what we found
+      if (i === 0) {
+        console.log(`   🔍 Looking for posts... found ${allLinks.length} potential links`);
+      }
+      
+      for (const link of allLinks) {
+        try {
+          const href = await link.getAttribute('href');
+          if (href && href.includes('/p/')) {
+            // Normalize the URL (remove query params)
+            const cleanHref = href.split('?')[0];
+            postLinksSet.add(cleanHref);
+          }
+        } catch (e) {
+          // Link might be stale, ignore
         }
       }
       
@@ -183,11 +218,38 @@ class InstagramHumanScraper {
       });
       
       // Wait for new content to load
-      await this.randomDelay(3000, 5000);
+      await this.randomDelay(4000, 6000);
     }
     
     this.allPostLinks = Array.from(postLinksSet);
     console.log(`\n✅ Total posts collected: ${this.allPostLinks.length}`);
+    
+    // Debug: Take screenshot if no posts found
+    if (this.allPostLinks.length === 0) {
+      console.log('   ⚠️  No posts found! Taking debug screenshot...');
+      await this.page.screenshot({ path: path.join(SCREENSHOTS_DIR, 'no-posts-debug.png'), fullPage: true });
+      
+      // Try to see what's on the page
+      const pageContent = await this.page.content();
+      const hasPosts = pageContent.includes('/p/');
+      console.log(`   🔍 Page contains '/p/' links: ${hasPosts}`);
+      
+      // List all links on page for debugging
+      const allPageLinks = await this.page.locator('a').all();
+      console.log(`   🔍 Total links on page: ${allPageLinks.length}`);
+      
+      // Show first few links
+      let shown = 0;
+      for (const link of allPageLinks.slice(0, 10)) {
+        try {
+          const href = await link.getAttribute('href');
+          if (href) {
+            console.log(`      Link ${shown + 1}: ${href.substring(0, 80)}`);
+            shown++;
+          }
+        } catch (e) {}
+      }
+    }
     
     // Scroll back to top
     await this.page.evaluate(() => {
