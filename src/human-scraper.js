@@ -23,10 +23,13 @@ class InstagramHumanScraper {
     this.allPostLinks = [];
   }
 
-  async init(headless = true) {
+  async init() {
+    // Use environment variable or default to false (show browser for manual login)
+    const headless = process.env.IG_HEADLESS === 'true';
+    
     console.log('🚀 Launching browser with persistent context...');
     console.log(`   User data: ${path.resolve(USER_DATA_DIR)}`);
-    console.log(`   Headless mode: ${headless ? 'YES' : 'NO (requires display)'}`);
+    console.log(`   Headless mode: ${headless ? 'YES' : 'NO (browser will be visible)'}`);
     
     this.context = await chromium.launchPersistentContext(USER_DATA_DIR, {
       headless,
@@ -357,8 +360,8 @@ async function main() {
     const scrollRounds = parseInt(process.env.IG_SCROLL_ROUNDS) || 5;
     const maxPosts = process.env.IG_MAX_POSTS ? parseInt(process.env.IG_MAX_POSTS) : null;
     
-    // Initialize (headless for Docker, set to false if you have a display)
-    await scraper.init(true);
+    // Initialize (browser will be visible by default for manual login)
+    await scraper.init();
     
     // Check/login
     const isLoggedIn = await scraper.checkLoginStatus();
