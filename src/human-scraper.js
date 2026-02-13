@@ -59,28 +59,50 @@ class InstagramHumanScraper {
   async checkLoginStatus() {
     console.log('\n🔍 Checking if already logged in...');
     
-    await this.page.goto('https://www.instagram.com/', { 
-      waitUntil: 'networkidle',
-      timeout: 60000 
-    });
-    
-    await this.randomDelay(3000, 5000);
-    
-    const currentUrl = this.page.url();
-    
-    if (currentUrl.includes('/accounts/login/')) {
-      console.log('   ⚠️  Not logged in. Please login manually.');
-      return false;
+    try {
+      // Try to load Instagram with shorter timeout
+      await this.page.goto('https://www.instagram.com/', { 
+        waitUntil: 'domcontentloaded',
+        timeout: 30000 
+      });
+      
+      // Wait a bit for page to settle
+      await this.page.waitForTimeout(5000);
+      
+      const currentUrl = this.page.url();
+      
+      // If we're redirected to login page, not logged in
+      if (currentUrl.includes('/accounts/login/')) {
+        console.log('   ⚠️  Not logged in. Please login manually.');
+        return false;
+      }
+      
+      // Check for home feed indicators
+      const isLoggedIn = await this.page.locator('svg[aria-label="Home"], nav a[href="/"], article').first().isVisible().catch(() => false);
+      
+      if (isLoggedIn) {
+        console.log('   ✅ Already logged in!');
+        return true;
+      }
+      
+      // Check if we can see the main content
+      const hasContent = await this.page.locator('main, article, [data-testid="user-avatar"]').count() > 0;
+      if (hasContent && !currentUrl.includes('login')) {
+        console.log('   ✅ Already logged in! (detected content)');
+        return true;
+      }
+      
+    } catch (error) {
+      console.log(`   ⚠️  Timeout checking login, will try to proceed: ${error.message}`);
+      // If we got here without being redirected to login, we might be logged in
+      const currentUrl = this.page.url();
+      if (!currentUrl.includes('/accounts/login/')) {
+        console.log('   ✅ Assuming logged in (no redirect to login)');
+        return true;
+      }
     }
     
-    const isLoggedIn = await this.page.locator('svg[aria-label="Home"], nav a[href="/"]').first().isVisible().catch(() => false);
-    
-    if (isLoggedIn) {
-      console.log('   ✅ Already logged in!');
-      return true;
-    }
-    
-    console.log('   ⚠️  Login status unclear.');
+    console.log('   ⚠️  Login status unclear - manual login needed');
     return false;
   }
 
