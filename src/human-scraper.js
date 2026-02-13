@@ -351,13 +351,23 @@ class InstagramHumanScraper {
     // Get all images - looking for .fna.fbcdn.net URLs ending in .jpg
     console.log('   🖼️  Finding images...');
     
-    // Extract all image URLs from the page
+    // Extract all image URLs from the page - filter out profile pictures
     const allImageUrls = await this.page.evaluate(() => {
       const images = [];
       const imgElements = document.querySelectorAll('img');
       imgElements.forEach(img => {
-        if (img.src && img.src.includes('.fna.fbcdn.net/v/') && img.src.includes('.jpg')) {
-          images.push(img.src);
+        const src = img.src;
+        if (src && 
+            src.includes('.fna.fbcdn.net/v/') && 
+            src.includes('.jpg') &&
+            // Exclude profile pictures (they have /t51.2885-19/ pattern which is smaller)
+            !src.includes('/t51.2885-19/') &&
+            // Exclude other small formats
+            !src.includes('/t51.2885-15/') &&
+            // Only include main post formats (large images)
+            (src.includes('/t51.82787-') || src.includes('/t51.82785-') || src.includes('scontent'))
+           ) {
+          images.push(src);
         }
       });
       return images;
@@ -383,13 +393,20 @@ class InstagramHumanScraper {
         await nextBtn.click();
         await this.randomDelay(2000, 3000);
         
-        // Get new images
+        // Get new images - apply same filter
         const newImages = await this.page.evaluate(() => {
           const images = [];
           const imgElements = document.querySelectorAll('img');
           imgElements.forEach(img => {
-            if (img.src && img.src.includes('.fna.fbcdn.net/v/') && img.src.includes('.jpg')) {
-              images.push(img.src);
+            const src = img.src;
+            if (src && 
+                src.includes('.fna.fbcdn.net/v/') && 
+                src.includes('.jpg') &&
+                !src.includes('/t51.2885-19/') &&
+                !src.includes('/t51.2885-15/') &&
+                (src.includes('/t51.82787-') || src.includes('/t51.82785-') || src.includes('scontent'))
+               ) {
+              images.push(src);
             }
           });
           return images;
