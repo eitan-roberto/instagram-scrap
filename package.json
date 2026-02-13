@@ -6,12 +6,15 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "scrape": "node src/scraper.js",
-    "test": "node src/test-login.js"
+    "scrape": "node src/human-scraper.js",
+    "scrape:old": "node src/scraper.js",
+    "test": "node src/test-login.js",
+    "login": "node src/human-scraper.js"
   },
   "dependencies": {
     "csv-writer": "^1.6.0",
     "dotenv": "^16.6.1",
+    "playwright": "^1.58.2",
     "puppeteer": "^21.11.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
