@@ -143,12 +143,21 @@ class InstagramHumanScraper {
     console.log(`\n🎯 Loading profile: ${profileUrl}`);
     console.log(`📜 Will scroll ${scrollRounds} times to load posts\n`);
     
-    await this.page.goto(profileUrl, { 
-      waitUntil: 'networkidle',
-      timeout: 60000 
-    });
+    try {
+      await this.page.goto(profileUrl, { 
+        waitUntil: 'domcontentloaded',
+        timeout: 30000 
+      });
+      
+      // Wait for content to load
+      await this.page.waitForTimeout(5000);
+      
+    } catch (error) {
+      console.log(`   ⚠️  Timeout loading profile, trying to continue...`);
+      await this.page.waitForTimeout(5000);
+    }
     
-    await this.randomDelay(3000, 5000);
+    await this.randomDelay(2000, 3000);
     
     const postLinksSet = new Set();
     
@@ -226,12 +235,20 @@ class InstagramHumanScraper {
 
   async scrapeSinglePost(postUrl) {
     // Navigate to post directly
-    await this.page.goto(postUrl, { 
-      waitUntil: 'networkidle',
-      timeout: 60000 
-    });
+    try {
+      await this.page.goto(postUrl, { 
+        waitUntil: 'domcontentloaded',
+        timeout: 30000 
+      });
+      
+      await this.page.waitForTimeout(3000);
+      
+    } catch (error) {
+      console.log(`   ⚠️  Timeout loading post, trying to continue...`);
+      await this.page.waitForTimeout(3000);
+    }
     
-    await this.randomDelay(3000, 5000);
+    await this.randomDelay(2000, 3000);
     
     const data = {
       postUrl: postUrl,
