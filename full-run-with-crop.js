@@ -184,8 +184,13 @@ ${description}
 IMPORTANT - Model Details:
 Use the person in the reference image as the model. Maintain their exact face features, long dark hair style and color, and skin tone. The model should have the same hair color and hairstyle as shown in the reference.
 
-Styling:
-Add a thin, subtle white border/frame around the image (about 2-3% of image width). Make the bottom border slightly thicker than the sides. The main subject should fill most of the frame and be positioned centrally, with only a small white margin around the edges.`;
+Camera/Style Requirements:
+- Photo should look like it was taken with a modern good smartphone (iPhone/Samsung quality)
+- Natural, candid aesthetic - NOT professional studio photography
+- Slight natural grain/authentic feel like a real phone camera
+- Natural lighting, no heavy studio lights
+- Casual, lifestyle feel like an everyday Instagram post
+- No white borders or frames - full bleed image edge to edge`;
 
       const generateResponse = await callGemini({
         contents: [{
