@@ -1,0 +1,27 @@
+{
+  "candidates": [
+    {
+      "content": {},
+      "finishReason": "IMAGE_SAFETY",
+      "index": 0,
+      "finishMessage": "Unable to show the generated image. The image was filtered out because it violated Google's [Generative AI Prohibited Use policy](https://policies.google.com/terms/generative-ai/use-policy). You will not be charged for blocked images. Try rephrasing the prompt. If you think this was an error, [send feedback](https://ai.google.dev/gemini-api/docs/troubleshooting)."
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 684,
+    "totalTokenCount": 923,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 426
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 258
+      }
+    ],
+    "thoughtsTokenCount": 239
+  },
+  "modelVersion": "gemini-3-pro-image-preview",
+  "responseId": "jnCRaYS4I_PaxN8P-6fHwQg"
+}
