@@ -4,7 +4,7 @@ import fs from 'fs';
 // Set proxy
 process.env.NORDVPN_PROXY = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 
-const API_KEY = 'AIzaSyAxQ7X3xweJdEG1lgzQDEFVWz07ZMSwZR0';
+const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 const generator = new GeminiImageGenerator(API_KEY, { model: 'gemini-2.5-flash' });
 
 const outputDir = './test-batch';

@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
-const API_KEY = 'AIzaSyAxQ7X3xweJdEG1lgzQDEFVWz07ZMSwZR0';
+const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 
 // Test image from helenabeckmann
 const instagramImageUrl = 'https://scontent-fra5-2.cdninstagram.com/v/t51.82787-15/632631406_18153149800444840_773346114252105670_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=106&ig_cache_key=MzgyOTUwMjQzOTM1MTY3ODE3Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTA4MC5oZHIuQzMifQ%3D%3D&_nc_ohc=DC_MY6L8gJUQ7kNvwFsnpX4&_nc_oc=AdnOIt5yLnqm2iyaPPSiWrGWNv3ZcjR653RAhQsBisKnq5KAvUiUaKXzIpOBW3KgIgw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra5-2.cdninstagram.com&_nc_gid=mKt38nEnNGE3RkNsuEGpqQ&oh=00_AftEabaKcYkuKLziouIkBVMkwk6fZkmqGewoD_CWwTWoIQ&oe=699722D4';

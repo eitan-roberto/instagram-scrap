@@ -5,7 +5,7 @@ import path from 'path';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
-const API_KEY = 'AIzaSyAxQ7X3xweJdEG1lgzQDEFVWz07ZMSwZR0';
+const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 
 const identityImagePath = './src/models/israeli-cute.png';
 const outputDir = './test-noachassidim-batch';

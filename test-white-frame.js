@@ -4,7 +4,7 @@ import fs from 'fs';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
-const API_KEY = 'AIzaSyAxQ7X3xweJdEG1lgzQDEFVWz07ZMSwZR0';
+const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 
 const instagramUrl = 'https://scontent-fra5-2.cdninstagram.com/v/t51.82787-15/629728561_18152801923444840_1321420214850376778_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=106&ig_cache_key=MzgyNjU2NjIwMDE4NTEyNTEwNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTA4MC5oZHIuQzMifQ%3D%3D&_nc_ohc=Cq1x3SBamYsQ7kNvwHbdzOa&_nc_oc=AdnotM5EYSCC-syRyatCCmvXtSjgA0ETXMt9F17cBj9JQbJ2m-r7f9GkbfAucJ6ASZo&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra5-2.cdninstagram.com&_nc_gid=D3XfIJJqD1clcXMRe3wtyw&oh=00_AfsU_vPq12GnZQR5OMauBCxQl9oCD66lBNaxe-2BsmuzGA&oe=69973DCB';
 const identityPath = './src/models/israeli-cute.png';
