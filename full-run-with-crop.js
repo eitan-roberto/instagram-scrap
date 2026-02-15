@@ -23,7 +23,7 @@ if (!fs.existsSync(outputDir)) {
 console.log('🎨 FULL RUN with 4:5 Top + Side Crop\n');
 console.log('==============================================\n');
 console.log(`📸 Generating images...`);
-console.log(`✂️  Auto-cropping to 4:5 from top + ${SIDE_CROP_PERCENT}% from sides\n`);
+console.log(`✂️  Auto-cropping to 4:5 from top + ${SIDE_CROP_PERCENT}% from each side\n`);
 
 function downloadImage(url) {
   return new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ function callGemini(payload, model = 'gemini-2.5-flash') {
 }
 
 // Config
-const SIDE_CROP_PERCENT = 1; // Crop 1% from each side
+const SIDE_CROP_PERCENT = 2; // Crop 2% from each side
 
 // Crop to 4:5 from top + crop sides
 async function cropTo45FromTop(inputPath, outputPath) {

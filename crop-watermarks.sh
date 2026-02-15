@@ -6,7 +6,7 @@
 echo "🖼️  Cropping images to 4:5 from top + 1% sides..."
 echo ""
 
-SIDE_CROP=1
+SIDE_CROP=2
 
 find ./output/helena-cropped -name "generated.jpg" -type f | while read file; do
     dir=$(dirname "$file")
