@@ -84,13 +84,16 @@ export class GeminiImageGenerator {
       "Create a portrait wearing the outfit from the first image, with the face characteristics from the second image."
     ];
 
-    const structureB64 = typeof structureImage === 'string' && structureImage.startsWith('http') 
-      ? await this.downloadImage(structureImage)
-      : this.imageToBase64(structureImage);
+    const structureUrl = typeof structureImage === 'string' ? structureImage.trim() : structureImage;
+    const identityUrl = typeof identityImage === 'string' ? identityImage.trim() : identityImage;
     
-    const identityB64 = typeof identityImage === 'string' && identityImage.startsWith('http')
-      ? await this.downloadImage(identityImage)
-      : this.imageToBase64(identityImage);
+    const structureB64 = typeof structureUrl === 'string' && structureUrl.startsWith('http') 
+      ? await this.downloadImage(structureUrl)
+      : this.imageToBase64(structureUrl);
+    
+    const identityB64 = typeof identityUrl === 'string' && identityUrl.startsWith('http')
+      ? await this.downloadImage(identityUrl)
+      : this.imageToBase64(identityUrl);
 
     const results = [];
 
