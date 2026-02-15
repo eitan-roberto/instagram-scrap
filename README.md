@@ -1,139 +1,236 @@
-# Instagram Scraper - Human-like Approach
+# Instagram Automation CLI
 
-This scraper mimics a real human browsing Instagram, which avoids detection and blocking.
-
-## How It Works
-
-Instead of trying to automate login (which gets blocked), this approach:
-
-1. **Opens a real browser window** you can see
-2. **You login manually** (like a normal user)
-3. **Session is saved** so you don't need to login again
-4. **Scraper enters each photo** like a human clicking
-5. **Extracts all image URLs** including carousels
-6. **Saves to CSV** for easy analysis
-
-## Quick Start
-
-### 1. Set target profile
-
-```bash
-export IG_TARGET="https://www.instagram.com/username/"
-export IG_MAX_PHOTOS=20  # How many photos to scrape
-```
-
-### 2. Run the scraper
-
-```bash
-npm run scrape
-```
-
-### 3. First time - Login manually
-
-- A Chrome window will open
-- Instagram will load
-- **Login manually** with your credentials
-- **Press ENTER** in the terminal when done
-- Your session is now saved!
-
-### 4. Scraping begins
-
-The scraper will:
-- Navigate to the profile
-- Scroll naturally (like a human)
-- Click each photo
-- Extract image URLs
-- Handle carousels (multiple images)
-- Save everything to CSV
+A CLI tool for Instagram automation: **scrape → generate → review → upload**
 
 ## Features
 
-✅ **Persistent session** - Login once, reuse forever  
-✅ **Human-like delays** - Random waits between actions  
-✅ **Natural scrolling** - Mimics real user behavior  
-✅ **Carousel support** - Gets all images from multi-photo posts  
-✅ **Progress saving** - Saves CSV every 5 posts  
-✅ **Headless ready** - After first login, can run headless  
+- **Scrape** - Download posts from any Instagram account
+- **Generate** - Create new images using Gemini AI (face-swap or generation)
+- **Describe** - Analyze images and get structured JSON descriptions
+- **Review** - Human-in-the-loop approval workflow
+- **Upload** - Post approved content to destination account
 
-## Output
+## Installation
 
-CSV files saved to `data/` folder:
-```csv
-URL,Caption,Likes,Date,Image_URLs
-https://instagram.com/p/ABC123,Beautiful sunset,1234 likes,2024-01-15,https://instagram.com/image1.jpg
+```bash
+npm install
 ```
 
-## File Structure
+## Configuration
 
+Set your Gemini API key:
+
+```bash
+export GEMINI_API_KEY="your-api-key"
 ```
-instagram-scrap/
-├── src/
-│   └── human-scraper.js    # Main scraper
-├── user_data/              # Saved browser session (cookies, etc)
-├── screenshots/            # Debug screenshots
-├── data/                   # CSV output
-└── package.json
+
+Or use `--apiKey` flag with commands.
+
+## Commands
+
+### 1. Scrape
+
+```bash
+# Scrape entire profile
+./cli.js scrape -t noachassidim
+
+# Limit number of posts
+./cli.js scrape -t noachassidim -l 20
 ```
+
+### 2. Describe (Image Analysis)
+
+Analyze images and get structured JSON descriptions:
+
+```bash
+# Describe all images from scraped CSV
+./cli.js describe -i ./data/noachassidim-scraped.csv -o ./descriptions
+
+# Describe single image
+./cli.js describe -i ./image.jpg
+```
+
+Output structure:
+```json
+{
+  "meta": {
+    "quality": "ultrafotorrealista",
+    "resolution": "8k",
+    "camera": "iPhone 15 Pro",
+    "aspect_ratio": "4:3",
+    "style": "realismo crudo..."
+  },
+  "character_lock": {
+    "age": "veintitantos",
+    "ethnicity": "mediterránea",
+    "hair": { "color": "castaño", "style": "moño desordenado" },
+    "eyes": "marrones",
+    "body": { "type": "curvilínea", ... }
+  },
+  "scene": { "location": "dormitorio", "time": "tarde", ... },
+  "camera_perspective": { "pov": "selfie", "angle": "alto", ... },
+  "subject": { "action": "de pie", "pose": {...}, "outfit": {...} },
+  "lighting": { "type": "lámpara cálida", ... },
+  "negative_prompt": ["hombres", "desnudez", ...]
+}
+```
+
+### 3. Generate Images
+
+#### Face Swap Mode
+Swap faces between images:
+
+```bash
+./cli.js generate \
+  -i ./data/noachassidim-scraped.csv \
+  --identity ./face.png \
+  --mode face-swap \
+  -o ./generated
+```
+
+#### Describe Mode (for review)
+Generate descriptions without images:
+
+```bash
+./cli.js generate -i ./data/noachassidim.csv --mode describe
+```
+
+#### Generation Mode
+Generate from text prompts:
+
+```bash
+./cli.js generate \
+  -i ./data/posts.csv \
+  --mode generate \
+  --prompt "Create a similar image but with..."
+```
+
+### 4. Review
+
+```bash
+# Show all items for review
+./cli.js review show
+
+# Check status
+./cli.js review pending
+
+# Approve specific post
+./cli.js review approve --id DUdpoCMDsuY
+
+# Reject post
+./cli.js review reject --id DGBHsgWIxUH
+```
+
+### 5. Upload
+
+```bash
+# Upload only approved posts
+./cli.js upload approved -a @myaccount
+```
+
+### 6. Daily Workflow
+
+Full automation (scrape → describe → review → upload):
+
+```bash
+./cli.js daily --source noachassidim --dest @myaccount
+```
+
+This will:
+1. Scrape all posts from source
+2. Generate descriptions for images
+3. Show you the review list
+4. Wait for your approval
+5. Upload approved posts
 
 ## Session Management
 
-Your login session is stored in `user_data/` folder. This includes:
-- Cookies
-- Local storage
-- Session storage
-- Login state
-
-**To logout/start fresh:**
 ```bash
-rm -rf user_data/
+# Create login session
+./cli.js session create --name @myaccount
+
+# List sessions
+./cli.js session list
+
+# Delete session
+./cli.js session delete --name @myaccount
 ```
 
-## Docker/Sandbox Notes
+## Directory Structure
 
-This approach works much better in Docker because:
-- Uses real browser with persistent storage
-- Manual login bypasses bot detection
-- Human-like timing avoids rate limits
-- Session reuse reduces login attempts
-
-## Troubleshooting
-
-**"Please login manually" keeps appearing:**
-- Delete `user_data/` folder and try again
-- Make sure you're fully logged in before pressing ENTER
-
-**Photos not loading:**
-- Check your internet connection
-- Instagram may be slow - increase delays in the code
-
-**Getting blocked after scraping many photos:**
-- Reduce `IG_MAX_PHOTOS` to scrape fewer at once
-- Add longer delays between photos (edit the `randomDelay` calls)
-- Wait a few hours before scraping again
-
-## Security
-
-- Your login credentials are NOT stored
-- Only session cookies are saved
-- You login manually (scraper never sees your password)
-- Session is stored locally on your machine
-
-## Alternative: Old Puppeteer Approach
-
-If you want to try the automated approach (less reliable):
-
-```bash
-npm run scrape:old
+```
+├── data/              # Scraped CSV files
+├── generated/         # Generated images + manifests
+├── descriptions/      # Image analysis JSON files
+├── review/            # Approval tracking
+│   └── approvals.json
+├── sessions/          # Instagram login sessions
+└── src/
+    ├── commands/      # CLI commands
+    ├── core/          # Core modules
+    │   ├── scraper.js
+    │   ├── gemini.js  # Image generation & description
+    │   └── csv.js
+    └── utils/
 ```
 
-This uses Puppeteer with stealth plugins but Instagram usually blocks it.
+## Human-in-the-Loop Workflow
 
-## Requirements
+The CLI is designed for approval workflow:
 
-- Node.js 18+
-- Playwright (installs automatically)
-- Chrome/Chromium (Playwright downloads this)
+```bash
+# 1. Run daily workflow (stops at review)
+./cli.js daily --source noachassidim --dest @myaccount
+
+# 2. Review descriptions/images
+./cli.js review show
+
+# 3. Approve good posts
+./cli.js review approve --id POST_ID_1
+./cli.js review approve --id POST_ID_2
+
+# 4. Upload approved
+./cli.js upload approved -a @myaccount
+```
+
+## API Reference
+
+### GeminiImageGenerator
+
+```javascript
+import { GeminiImageGenerator } from './src/core/gemini.js';
+
+const gen = new GeminiImageGenerator(apiKey, { model: 'gemini-2.5-flash' });
+
+// Face swap
+await gen.faceSwap('./identity.jpg', './structure.jpg');
+
+// Generate from prompt
+await gen.generate('A photo of...', { aspectRatio: '9:16' });
+```
+
+### ImageDescriptor
+
+```javascript
+import { ImageDescriptor } from './src/core/gemini.js';
+
+const desc = new ImageDescriptor(apiKey);
+
+// Single image
+const result = await desc.describe('./image.jpg');
+
+// Batch
+const results = await desc.describeBatch(['img1.jpg', 'img2.jpg']);
+```
+
+## Environment Variables
+
+```bash
+GEMINI_API_KEY      # Required for generation/describe
+IG_USERNAME         # For upload (optional)
+IG_PASSWORD         # For upload (optional)
+```
 
 ## License
 
-Use at your own risk. Respect Instagram's Terms of Service.
+Private
