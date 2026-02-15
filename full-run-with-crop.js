@@ -2,6 +2,7 @@ import { SocksProxyAgent } from 'socks-proxy-agent';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
@@ -13,16 +14,16 @@ const csvPath = './data/helenabeckmann-scraped.csv';
 
 // Config
 const IMAGES_PER_POST = 3;
-const CROP_PERCENT = 5; // Crop bottom 5% to remove watermark
+const TARGET_RATIO = 4/5; // 4:5 for Instagram feed
 
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-console.log('🎨 FULL RUN with Auto-Crop (Watermark Removal)\n');
+console.log('🎨 FULL RUN with 4:5 Top + Side Crop\n');
 console.log('==============================================\n');
 console.log(`📸 Generating images...`);
-console.log(`✂️  Auto-cropping bottom ${CROP_PERCENT}% to remove watermarks\n`);
+console.log(`✂️  Auto-cropping to 4:5 from top + ${SIDE_CROP_PERCENT}% from sides\n`);
 
 function downloadImage(url) {
   return new Promise((resolve, reject) => {
@@ -59,18 +60,40 @@ function callGemini(payload, model = 'gemini-2.5-flash') {
   });
 }
 
-// Simple crop function using image data
-// Note: This is a placeholder - we'd need sharp or similar for actual cropping
-// For now, we'll save both versions and note that cropping should be done
-async function cropImage(inputPath, outputPath, cropPercent) {
-  // For now, just copy and log
-  // In production, use: sharp(inputPath).extract({left: 0, top: 0, width: width, height: height * (1-cropPercent/100)})
-  console.log(`   ✂️  Crop: Remove bottom ${cropPercent}%`);
-  console.log(`      Original: ${inputPath}`);
-  console.log(`      Cropped: ${outputPath} (use Sharp/ImageMagick)`);
-  
-  // Copy for now - user can crop manually or we can add sharp later
-  fs.copyFileSync(inputPath, outputPath);
+// Config
+const SIDE_CROP_PERCENT = 1; // Crop 1% from each side
+
+// Crop to 4:5 from top + crop sides
+async function cropTo45FromTop(inputPath, outputPath) {
+  try {
+    const metadata = await sharp(inputPath).metadata();
+    const width = metadata.width;
+    const height = metadata.height;
+    
+    // Calculate new height for 4:5 ratio
+    const newHeight = Math.floor(width / TARGET_RATIO);
+    
+    // Calculate side crop (1% from each side)
+    const newWidth = Math.floor(width * (1 - SIDE_CROP_PERCENT * 2 / 100));
+    const leftOffset = Math.floor((width - newWidth) / 2);
+    
+    if (newHeight < height) {
+      // Extract from top + crop sides
+      await sharp(inputPath)
+        .extract({ left: leftOffset, top: 0, width: newWidth, height: newHeight })
+        .toFile(outputPath);
+      console.log(`   ✂️  Cropped: ${newWidth}x${newHeight} (4:5 from top + ${SIDE_CROP_PERCENT}% sides)`);
+    } else {
+      // Image is already 4:5 or taller, just crop sides
+      await sharp(inputPath)
+        .extract({ left: leftOffset, top: 0, width: newWidth, height: height })
+        .toFile(outputPath);
+      console.log(`   ✂️  Cropped sides: ${newWidth}x${height} (kept height)`);
+    }
+  } catch (e) {
+    console.log(`   ⚠️  Crop failed: ${e.message}, copying original`);
+    fs.copyFileSync(inputPath, outputPath);
+  }
 }
 
 async function processPost(post, postIndex, totalPosts) {
@@ -187,8 +210,8 @@ Use the person in the reference image as the model. Maintain their face features
             imgResult.generatedPath = `img${imgIndex}/generated.jpg`;
             console.log(`     ✅ Generated: ${originalPath}`);
             
-            // "Crop" (copy for now, actual crop needs sharp)
-            await cropImage(originalPath, croppedPath, CROP_PERCENT);
+            // Crop to 4:5 from top
+            await cropTo45FromTop(originalPath, croppedPath);
             imgResult.croppedPath = `img${imgIndex}/generated-cropped.jpg`;
             
             saved = true;
@@ -298,8 +321,9 @@ async function main() {
   console.log(`Images: ${totalImages}`);
   console.log(`✅ Successful: ${totalSuccess}`);
   console.log(`\n📁 Output: ${outputDir}/`);
-  console.log(`✂️  Note: Images need bottom ${CROP_PERCENT}% cropped to remove watermarks`);
-  console.log(`   Use: sharp(input).extract({top: 0, left: 0, width: w, height: h * 0.95})`);
+  console.log(`✂️  All images cropped to 4:5 from top + ${SIDE_CROP_PERCENT}% from sides`);
+  console.log(`   Original: generated.jpg`);
+  console.log(`   Cropped:  generated-cropped.jpg (ready for Instagram)`);
 }
 
 main().catch(console.error);
