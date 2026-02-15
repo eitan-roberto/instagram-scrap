@@ -6,7 +6,7 @@ import sharp from 'sharp';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
-const API_KEY = process.env.GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
+const API_KEY = 'AIzaSyB7olaBwD3-zXFPfDTTXa-L20AytQUeRmM';
 
 const identityImagePath = './src/models/israeli-cute.png';
 const outputDir = './output/helena-cropped';
@@ -15,6 +15,7 @@ const csvPath = './data/helenabeckmann-scraped.csv';
 // Config
 const IMAGES_PER_POST = 3;
 const TARGET_RATIO = 4/5; // 4:5 for Instagram feed
+const SIDE_CROP_PERCENT = 4; // Crop 4% from each side
 
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
@@ -59,9 +60,6 @@ function callGemini(payload, model = 'gemini-2.5-flash') {
     req.end();
   });
 }
-
-// Config
-const SIDE_CROP_PERCENT = 4; // Crop 4% from each side
 
 // Crop to 4:5 from top + crop sides
 async function cropTo45FromTop(inputPath, outputPath) {

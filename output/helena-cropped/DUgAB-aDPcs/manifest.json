@@ -1,0 +1,36 @@
+{
+  "shortcode": "DUgAB-aDPcs",
+  "originalUrl": "https://www.instagram.com/helenabeckmann/p/DUgAB-aDPcs/",
+  "date": "2026-02-08T14:18:34.000Z",
+  "caption": "",
+  "processedAt": "2026-02-15T12:32:51.497Z",
+  "images": [
+    {
+      "index": 1,
+      "originalUrl": "https://scontent-fra3-1.cdninstagram.com/v/t51.82787-15/631333150_18152983336444840_4955405017372979074_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=108&ig_cache_key=MzgyODA1OTcwMTY2MTk4MjIyNQ%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTkyMC5oZHIuQzMifQ%3D%3D&_nc_ohc=-CLO135tgkMQ7kNvwE80UGC&_nc_oc=Adm8b7LAOuYSLEp8RnzDywrr3E8Cfmk0t9B4rlsR1BQCebA1y7OANQuIqEmsUH-uTOk&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra3-1.cdninstagram.com&_nc_gid=jZQM74RV4jmDoNX0cxR6kg&oh=00_AfvghB1OOiEhjJ5cabWESYpv3PDOGm9C7JYXcM7glI8Ncw&oe=69973FEA",
+      "status": "success",
+      "description": "Here's a detailed description of the image for AI image generation, formatted as a prompt:\n\n**Prompt:**\n\nA striking, full-body fashion portrait of a young woman standing dynamically on a stationary ex...",
+      "generatedPath": "img1/generated.jpg",
+      "croppedPath": "img1/generated-cropped.jpg",
+      "error": null
+    },
+    {
+      "index": 2,
+      "originalUrl": "https://scontent-fra5-1.cdninstagram.com/v/t51.82787-15/631931680_18152983345444840_3698346351132944084_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=102&ig_cache_key=MzgyODA1OTcwNzc3NzI0MjIwMg%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTkyMC5oZHIuQzMifQ%3D%3D&_nc_ohc=FqMHkdbFLCIQ7kNvwGcYixm&_nc_oc=Adm1rbUfS3BgBSpS-0E7_mrA3t9cTCk6BlThmfR1VTmgxXHz1LC8OwOQFpts_06k9Uw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra5-1.cdninstagram.com&_nc_gid=jZQM74RV4jmDoNX0cxR6kg&oh=00_AfuZIfazWQVrWSeS2pSvY9XL9iqhjbsNf4X9OnKZfvzZdA&oe=699743B8",
+      "status": "success",
+      "description": "Here's a detailed description of the image, formatted as an AI image generation prompt:\n\n**Prompt:**\n\nA fashion editorial-style full-body shot of a young woman lying arched backward over a large, smoo...",
+      "generatedPath": "img2/generated.jpg",
+      "croppedPath": "img2/generated-cropped.jpg",
+      "error": null
+    },
+    {
+      "index": 3,
+      "originalUrl": "https://scontent-fra3-2.cdninstagram.com/v/t51.82787-15/634931813_18153526981444840_1684970374524598972_n.jpg?stp=dst-jpegr_e35_tt6&_nc_cat=104&ig_cache_key=MzgzMjQxODYxMDQwMTAyNTQ5Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTkyMC5oZHIuQzMifQ%3D%3D&_nc_ohc=zyGt_iRfGWgQ7kNvwGEC1MO&_nc_oc=AdkHFrVtlmYmb-IQo9-Dp1HNfiuiT3AP8fDnVR8DQMe_Cu6CGqh3uAP3alcu97ViZYE&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra3-2.cdninstagram.com&_nc_gid=jZQM74RV4jmDoNX0cxR6kg&oh=00_AfuQipwYdKW-KoIO9_27zmpPaDxI9S4XqajzPgZIzYPxgg&oe=699719C3",
+      "status": "success",
+      "description": "Here's a detailed description of the image, formatted for an AI image generation prompt:\n\n**Prompt:**\n\nFull body shot of a young woman standing inside a modern, minimalist shower stall with light beig...",
+      "generatedPath": "img3/generated.jpg",
+      "croppedPath": "img3/generated-cropped.jpg",
+      "error": null
+    }
+  ]
+}
