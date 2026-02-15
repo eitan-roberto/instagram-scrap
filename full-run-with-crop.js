@@ -61,7 +61,7 @@ function callGemini(payload, model = 'gemini-2.5-flash') {
 }
 
 // Config
-const SIDE_CROP_PERCENT = 2; // Crop 2% from each side
+const SIDE_CROP_PERCENT = 4; // Crop 4% from each side
 
 // Crop to 4:5 from top + crop sides
 async function cropTo45FromTop(inputPath, outputPath) {
@@ -181,7 +181,11 @@ Provide the description in a format suitable for an AI image generation prompt.`
 
 ${description}
 
-Use the person in the reference image as the model. Maintain their face features, hair, and skin tone. The result should look like the model from the reference image wearing the outfit and pose described above.`;
+IMPORTANT - Model Details:
+Use the person in the reference image as the model. Maintain their exact face features, long dark hair style and color, and skin tone. The model should have the same hair color and hairstyle as shown in the reference.
+
+Styling:
+Add a clean white frame/border around the image. Make the bottom border slightly larger (about 10% of image height) to create a modern Polaroid-style look. The main subject should be positioned in the center of the frame, not too close to the bottom edge.`;
 
       const generateResponse = await callGemini({
         contents: [{
