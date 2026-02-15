@@ -185,7 +185,7 @@ IMPORTANT - Model Details:
 Use the person in the reference image as the model. Maintain their exact face features, long dark hair style and color, and skin tone. The model should have the same hair color and hairstyle as shown in the reference.
 
 Styling:
-Add a clean white frame/border around the image. Make the bottom border slightly larger (about 10% of image height) to create a modern Polaroid-style look. The main subject should be positioned in the center of the frame, not too close to the bottom edge.`;
+Add a thin, subtle white border/frame around the image (about 2-3% of image width). Make the bottom border slightly thicker than the sides. The main subject should fill most of the frame and be positioned centrally, with only a small white margin around the edges.`;
 
       const generateResponse = await callGemini({
         contents: [{
