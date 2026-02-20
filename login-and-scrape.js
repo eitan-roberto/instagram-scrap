@@ -2,10 +2,7 @@ import { chromium } from 'playwright';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
-import { SocksProxyAgent } from 'socks-proxy-agent';
 
-const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
-const agent = new SocksProxyAgent(PROXY_URL);
 const API_KEY = process.env.GEMINI_API_KEY;
 
 const EMAIL = 'eitanjtwd@gmail.com';
@@ -27,8 +24,7 @@ async function callGemini(payload, model) {
       hostname: 'generativelanguage.googleapis.com',
       path: `/v1beta/models/${model}:generateContent?key=${API_KEY}`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      agent
+      headers: { 'Content-Type': 'application/json' }
     }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -42,7 +38,7 @@ async function callGemini(payload, model) {
 
 async function downloadImage(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, { agent }, (res) => {
+    https.get(url, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
         return downloadImage(res.headers.location).then(resolve).catch(reject);
       }
