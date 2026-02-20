@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
  * Repository Builder - Scrape and extract outfits + scenes
- * Usage: node build-repository.js <instagram-handle>
+ * Uses Playwright with saved session
  */
 
 import 'dotenv/config';
-import { SocksProxyAgent } from 'socks-proxy-agent';
+import { chromium } from 'playwright';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
-import puppeteer from 'puppeteer';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
@@ -24,9 +24,10 @@ const PROFILES = ['linda.sza', 'lara_bsmnn', 'sina.anjulie', 'whatgigiwears', 's
 const REPO_DIR = './repository';
 const OUTFITS_DIR = path.join(REPO_DIR, 'outfits');
 const SCENES_DIR = path.join(REPO_DIR, 'scenes');
+const RAW_DIR = path.join(REPO_DIR, 'raw');
 
 // Create directories
-[REPO_DIR, OUTFITS_DIR, SCENES_DIR].forEach(dir => {
+[REPO_DIR, OUTFITS_DIR, SCENES_DIR, RAW_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
@@ -118,7 +119,6 @@ Focus only on clothing and accessories. Be very specific about colors, materials
 
   const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
   
-  // Extract JSON
   try {
     const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || [null, text];
     return JSON.parse(jsonMatch[1].trim());
@@ -182,82 +182,132 @@ Focus on location, lighting, and pose - NOT the outfit.`;
   }
 }
 
-async function scrapeProfile(handle) {
+async function scrapeProfile(handle, limit = 15) {
   console.log(`\n🔍 Scraping @${handle}...`);
   
-  const browser = await puppeteer.launch({
+  const context = await chromium.launchPersistentContext('./user_data', {
     headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      `--proxy-server=${PROXY_URL}`
-    ]
+    viewport: { width: 1280, height: 720 },
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   
-  const page = await browser.newPage();
-  await page.goto(`https://www.instagram.com/${handle}/`, { waitUntil: 'networkidle2', timeout: 60000 });
+  const page = await context.newPage();
   
-  // Wait for posts to load
-  await page.waitForSelector('article a[href*="/p/"]', { timeout: 30000 });
-  
-  // Get post links
-  const postLinks = await page.evaluate(() => {
-    const links = [];
-    document.querySelectorAll('article a[href*="/p/"]').forEach(a => {
-      const href = a.getAttribute('href');
-      if (href && !links.includes(href)) links.push(href);
+  try {
+    await page.goto(`https://www.instagram.com/${handle}/`, { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000 
     });
-    return links.slice(0, 20); // Limit to 20 posts
-  });
-  
-  console.log(`   Found ${postLinks.length} posts`);
-  
-  const posts = [];
-  
-  for (const link of postLinks.slice(0, 10)) { // Process max 10 posts
-    try {
-      const shortcode = link.split('/p/')[1]?.replace('/', '');
-      if (!shortcode) continue;
-      
-      console.log(`   Processing post: ${shortcode}`);
-      
-      await page.goto(`https://www.instagram.com${link}`, { waitUntil: 'networkidle2', timeout: 30000 });
-      await page.waitForTimeout(2000);
-      
-      // Get image URLs
-      const images = await page.evaluate(() => {
-        const imgs = [];
-        document.querySelectorAll('article img').forEach(img => {
-          const src = img.src;
-          if (src && src.includes('instagram.com') && !imgs.includes(src)) {
-            imgs.push(src);
-          }
-        });
-        return imgs;
-      });
-      
-      posts.push({ shortcode, images: images.slice(0, 5) }); // Max 5 images per post
-      
-    } catch (err) {
-      console.log(`   ⚠️  Error processing post: ${err.message}`);
+    
+    await page.waitForTimeout(3000);
+    
+    if (page.url().includes('/accounts/login/')) {
+      console.log('   ❌ Not logged in!');
+      await context.close();
+      return [];
     }
+    
+    // Scroll 5 times to load all posts
+    console.log('   📜 Scrolling to load posts...');
+    for (let i = 0; i < 5; i++) {
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.waitForTimeout(2000);
+      console.log(`   📜 Scroll ${i + 1}/5`);
+    }
+    
+    // Collect post links - filter for /p/ only (skip reels)
+    const allLinks = await page.locator('a[href*="/' + handle + '/p/"]').all();
+    const hrefs = await Promise.all(allLinks.map(l => l.getAttribute('href')));
+    
+    // Filter: must contain /p/ (posts), not /reel/ (reels)
+    let postLinks = [...new Set(
+      hrefs
+        .filter(h => h && h.includes('/p/') && !h.includes('/reel/'))
+        .map(h => h.split('?')[0])
+    )].slice(0, limit);
+    
+    console.log(`   📊 Found ${postLinks.length} posts (filtered /p/, skipped reels)`);
+    
+    console.log(`   Found ${postLinks.length} posts`);
+    
+    const posts = [];
+    
+    for (const link of postLinks) {
+      try {
+        const shortcode = link.split('/p/')[1]?.replace('/', '');
+        if (!shortcode) continue;
+        
+        console.log(`   Processing: ${shortcode}`);
+        
+        await page.goto(`https://www.instagram.com${link}`, { 
+          waitUntil: 'domcontentloaded', 
+          timeout: 20000 
+        });
+        await page.waitForTimeout(2000);
+        
+        // Get image URLs - look for scontent cdn with large images (>300px)
+        const imageUrls = await page.evaluate(() => {
+          const urls = [];
+          document.querySelectorAll('img').forEach(img => {
+            const src = img.src;
+            // Must be cdninstagram.com and large enough (not avatar)
+            if (src && 
+                src.includes('cdninstagram.com') && 
+                src.includes('.jpg') &&
+                img.width > 300 &&  // Skip small avatars
+                img.height > 300 &&
+                !urls.includes(src)) {
+              urls.push(src);
+            }
+          });
+          return urls;
+        });
+        
+        posts.push({ 
+          shortcode, 
+          url: `https://www.instagram.com${link}`,
+          images: imageUrls.slice(0, 5) 
+        });
+        
+      } catch (err) {
+        console.log(`   ⚠️  Error: ${err.message}`);
+      }
+    }
+    
+    await context.close();
+    return posts;
+    
+  } catch (err) {
+    console.log(`   ❌ Fatal error: ${err.message}`);
+    await context.close();
+    return [];
   }
-  
-  await browser.close();
-  return posts;
 }
 
 async function processProfile(handle) {
-  const posts = await scrapeProfile(handle);
+  const posts = await scrapeProfile(handle, 15);
   
-  console.log(`\n📊 Processing ${posts.length} posts for @${handle}...`);
+  if (posts.length === 0) {
+    console.log(`   ⚠️  No posts scraped for @${handle}`);
+    return;
+  }
+  
+  console.log(`\n   📊 Processing ${posts.length} posts...`);
   
   // Create handle-specific directories
   const handleOutfitsDir = path.join(OUTFITS_DIR, handle);
   const handleScenesDir = path.join(SCENES_DIR, handle);
-  [handleOutfitsDir, handleScenesDir].forEach(dir => {
+  const handleRawDir = path.join(RAW_DIR, handle);
+  
+  [handleOutfitsDir, handleScenesDir, handleRawDir].forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   });
+  
+  // Save raw data
+  fs.writeFileSync(
+    path.join(handleRawDir, 'posts.json'),
+    JSON.stringify(posts, null, 2)
+  );
   
   for (const post of posts) {
     console.log(`\n   Post: ${post.shortcode}`);
@@ -313,7 +363,7 @@ async function processProfile(handle) {
     }
   }
   
-  console.log(`\n✅ @${handle} complete!`);
+  console.log(`\n   ✅ @${handle} complete!`);
 }
 
 async function main() {
@@ -335,6 +385,7 @@ async function main() {
   console.log('='.repeat(70));
   console.log(`\nOutfits: ${OUTFITS_DIR}/`);
   console.log(`Scenes: ${SCENES_DIR}/`);
+  console.log(`Raw: ${RAW_DIR}/`);
 }
 
 main().catch(err => {
