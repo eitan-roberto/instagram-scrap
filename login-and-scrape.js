@@ -96,35 +96,44 @@ const context = await chromium.launchPersistentContext('./user_data', {
 const page = await context.newPage();
 
 // LOGIN
-console.log('\n📱 Logging in...');
+console.log('\n📱 Checking login status...');
 await page.goto('https://www.instagram.com/', { waitUntil: 'domcontentloaded', timeout: 60000 });
 await page.waitForTimeout(3000);
 
-// Click Log in
+// Check if already logged in (no login link visible)
 const loginLink = await page.locator('text=Log in').first();
-if (await loginLink.isVisible().catch(() => false)) {
-  await loginLink.click();
-  await page.waitForTimeout(3000);
+const needsLogin = await loginLink.isVisible().catch(() => false);
+
+if (!needsLogin && !page.url().includes('/accounts/login/')) {
+  console.log('✅ Already logged in!\n');
+} else {
+  console.log('🔐 Need to login...');
+  
+  // Click Log in if link visible
+  if (needsLogin) {
+    await loginLink.click();
+    await page.waitForTimeout(3000);
+  }
+  
+  // Fill form
+  await page.waitForSelector('input[name="email"], input[name="username"]', { timeout: 30000 });
+  const usernameField = await page.locator('input[name="email"], input[name="username"]').first();
+  const passwordField = await page.locator('input[name="pass"], input[type="password"]').first();
+  
+  await usernameField.fill(EMAIL);
+  await passwordField.fill(PASSWORD);
+  await passwordField.press('Enter');
+  
+  await page.waitForTimeout(8000);
+  
+  if (page.url().includes('/accounts/login/')) {
+    console.log('❌ Login failed');
+    await context.close();
+    process.exit(1);
+  }
+  
+  console.log('✅ Logged in!\n');
 }
-
-// Fill form
-await page.waitForSelector('input[name="email"], input[name="username"]', { timeout: 30000 });
-const usernameField = await page.locator('input[name="email"], input[name="username"]').first();
-const passwordField = await page.locator('input[name="pass"], input[type="password"]').first();
-
-await usernameField.fill(EMAIL);
-await passwordField.fill(PASSWORD);
-await passwordField.press('Enter');
-
-await page.waitForTimeout(8000);
-
-if (page.url().includes('/accounts/login/')) {
-  console.log('❌ Login failed');
-  await context.close();
-  process.exit(1);
-}
-
-console.log('✅ Logged in!\n');
 
 // SCRAPE PROFILES
 for (const handle of PROFILES) {
