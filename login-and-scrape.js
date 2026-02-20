@@ -50,34 +50,126 @@ async function downloadImage(url) {
 }
 
 async function extractOutfit(imageB64) {
-  const prompt = `Analyze this fashion photo and extract ONLY the outfit details. Return as JSON with fields: outfit.top, outfit.bottom, outfit.outerwear, outfit.accessories, outfit.footwear, outfit.overall_style. Be specific about colors and materials.`;
-  
-  const response = await callGemini({
-    contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: imageB64 } }, { text: prompt }] }]
-  }, 'gemini-2.5-flash');
+  const prompt = `Analyze this fashion photo and describe ONLY the outfit in this exact JSON format:
 
-  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+{
+  "outfit": {
+    "top": {
+      "type": "describe the clothing item (shirt, blouse, sweater, etc)",
+      "color": "specific color name",
+      "material": "fabric type (cotton, silk, wool, etc)",
+      "fit": "tight, loose, oversized, fitted, etc",
+      "details": "patterns, textures, buttons, zippers, cutouts, etc"
+    },
+    "bottom": {
+      "type": "pants, skirt, shorts, jeans, etc",
+      "color": "specific color",
+      "material": "fabric type",
+      "fit": "fit description",
+      "details": "style details"
+    },
+    "outerwear": {
+      "type": "jacket, coat, blazer, cardigan, or null if none",
+      "color": "color",
+      "material": "fabric"
+    },
+    "accessories": ["list visible accessories: jewelry, bags, belts, scarves, hats, etc"],
+    "footwear": {
+      "type": "shoes, boots, sandals, sneakers, or null if not visible",
+      "color": "color",
+      "style": "casual, formal, sporty, etc"
+    },
+    "overall_style": "brief style description (casual, elegant, streetwear, bohemian, etc)"
+  }
+}
+
+IMPORTANT: Return ONLY the JSON object, no markdown, no code blocks, no extra text.`;
+
   try {
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || [null, text];
-    return JSON.parse(jsonMatch[1].trim());
+    const response = await callGemini({
+      contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: imageB64 } }, { text: prompt }] }]
+    }, 'gemini-2.5-flash');
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Try to extract JSON from code blocks first
+    const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlockMatch) {
+      return JSON.parse(codeBlockMatch[1].trim());
+    }
+
+    // Try to find JSON object directly
+    const jsonMatch = text.match(/(\{[\s\S]*\})/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1].trim());
+    }
+
+    // If all else fails, return raw text
+    return { raw: text.substring(0, 500) };
   } catch (e) {
-    return { raw: text };
+    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response' };
   }
 }
 
 async function extractScene(imageB64) {
-  const prompt = `Analyze this fashion photo and extract scene details. Return as JSON with fields: scene.location, scene.lighting, scene.pose, scene.composition. Focus on location, lighting, and pose - NOT the outfit.`;
-  
-  const response = await callGemini({
-    contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: imageB64 } }, { text: prompt }] }]
-  }, 'gemini-2.5-flash');
+  const prompt = `Analyze this fashion photo and describe the SCENE (location, lighting, pose) in this exact JSON format:
 
-  const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+{
+  "scene": {
+    "location": {
+      "type": "indoor or outdoor",
+      "setting": "describe the environment: street, studio, nature, home, cafe, beach, city, etc",
+      "description": "detailed description of surroundings and background elements",
+      "background_elements": ["list visible objects, furniture, nature, buildings, etc"]
+    },
+    "lighting": {
+      "type": "natural, artificial, or mixed",
+      "quality": "soft, harsh, dramatic, diffused, golden, etc",
+      "direction": "front, side, back, top, bottom lighting",
+      "time_of_day": "morning, afternoon, golden hour, evening, night, or unknown",
+      "mood": "warm, cool, bright, dark, moody, airy, etc"
+    },
+    "pose": {
+      "body_position": "standing, sitting, walking, leaning, crouching, etc",
+      "orientation": "front facing, side profile, back, three-quarter view",
+      "angle": "eye level, low angle, high angle shot",
+      "expression": "neutral, smiling, serious, laughing, etc",
+      "gesture": "what are hands doing, body language",
+      "overall_vibe": "confident, relaxed, playful, serious, mysterious, etc"
+    },
+    "composition": {
+      "framing": "full body, mid shot, close up, portrait",
+      "camera_distance": "wide, medium, tight",
+      "depth_of_field": "sharp focus, blurred background, or all in focus"
+    }
+  }
+}
+
+IMPORTANT: Return ONLY the JSON object, no markdown, no code blocks, no extra text. Focus on WHERE and HOW the photo was taken, not what the person is wearing.`;
+
   try {
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || [null, text];
-    return JSON.parse(jsonMatch[1].trim());
+    const response = await callGemini({
+      contents: [{ parts: [{ inline_data: { mime_type: "image/jpeg", data: imageB64 } }, { text: prompt }] }]
+    }, 'gemini-2.5-flash');
+
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    
+    // Try to extract JSON from code blocks first
+    const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlockMatch) {
+      return JSON.parse(codeBlockMatch[1].trim());
+    }
+    
+    // Try to find JSON object directly
+    const jsonMatch = text.match(/(\{[\s\S]*\})/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[1].trim());
+    }
+    
+    // If all else fails, return raw text
+    return { raw: text.substring(0, 500) };
   } catch (e) {
-    return { raw: text };
+    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response' };
   }
 }
 
@@ -104,30 +196,30 @@ if (!needsLogin && !page.url().includes('/accounts/login/')) {
   console.log('✅ Already logged in!\n');
 } else {
   console.log('🔐 Need to login...');
-  
+
   // Click Log in if link visible
   if (needsLogin) {
     await loginLink.click();
     await page.waitForTimeout(3000);
   }
-  
+
   // Fill form
   await page.waitForSelector('input[name="email"], input[name="username"]', { timeout: 30000 });
   const usernameField = await page.locator('input[name="email"], input[name="username"]').first();
   const passwordField = await page.locator('input[name="pass"], input[type="password"]').first();
-  
+
   await usernameField.fill(EMAIL);
   await passwordField.fill(PASSWORD);
   await passwordField.press('Enter');
-  
+
   await page.waitForTimeout(8000);
-  
+
   if (page.url().includes('/accounts/login/')) {
     console.log('❌ Login failed');
     await context.close();
     process.exit(1);
   }
-  
+
   console.log('✅ Logged in!\n');
 }
 
@@ -135,45 +227,45 @@ if (!needsLogin && !page.url().includes('/accounts/login/')) {
 for (const handle of PROFILES) {
   console.log(`${'='.repeat(70)}`);
   console.log(`🔍 Scraping @${handle}...`);
-  
+
   const handleOutfitsDir = path.join(OUTFITS_DIR, handle);
   const handleScenesDir = path.join(SCENES_DIR, handle);
   const handleRawDir = path.join(RAW_DIR, handle);
   [handleOutfitsDir, handleScenesDir, handleRawDir].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
-  
+
   try {
     await page.goto(`https://www.instagram.com/${handle}/`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(3000);
-    
+
     if (page.url().includes('/accounts/login/')) {
       console.log('   ❌ Session expired, re-logging...');
       break; // Stop scraping
     }
-    
+
     // Scroll
     console.log('   📜 Scrolling...');
     for (let i = 0; i < 5; i++) {
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await page.waitForTimeout(2000);
     }
-    
+
     // Get posts
     const links = await page.locator(`a[href*="/${handle}/p/"]`).all();
     const hrefs = await Promise.all(links.map(l => l.getAttribute('href')));
     const postLinks = [...new Set(hrefs.filter(h => h && h.includes('/p/')))].slice(0, 15);
-    
+
     console.log(`   📊 Found ${postLinks.length} posts`);
-    
+
     const posts = [];
     for (const link of postLinks) {
       const shortcode = link.split('/p/')[1]?.replace('/', '');
       if (!shortcode) continue;
-      
+
       console.log(`   Post: ${shortcode}`);
-      
+
       await page.goto(`https://www.instagram.com${link}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
       await page.waitForTimeout(2000);
-      
+
       const imageUrls = await page.evaluate(() => {
         const urls = [];
         document.querySelectorAll('img').forEach(img => {
@@ -187,21 +279,21 @@ for (const handle of PROFILES) {
         });
         return [...new Set(urls)];
       });
-      
+
       posts.push({ shortcode, url: `https://www.instagram.com${link}`, images: imageUrls.slice(0, 5) });
     }
-    
+
     fs.writeFileSync(path.join(handleRawDir, 'posts.json'), JSON.stringify(posts, null, 2));
-    
+
     // Extract outfits and scenes
     for (const post of posts) {
       if (post.images.length === 0) continue;
-      
+
       const postScenesDir = path.join(handleScenesDir, post.shortcode);
       if (!fs.existsSync(postScenesDir)) fs.mkdirSync(postScenesDir, { recursive: true });
-      
+
       console.log(`\n   Processing ${post.shortcode}...`);
-      
+
       try {
         // Outfit from img1
         console.log('   📸 Outfit...');
@@ -209,7 +301,7 @@ for (const handle of PROFILES) {
         const outfit = await extractOutfit(img1B64);
         fs.writeFileSync(path.join(handleOutfitsDir, `${post.shortcode}.json`), JSON.stringify({ handle, shortcode: post.shortcode, source_url: post.images[0], outfit }, null, 2));
         console.log('   ✅ Outfit saved');
-        
+
         // Scenes from all images
         for (let i = 0; i < post.images.length; i++) {
           console.log(`   📸 Scene img${i+1}...`);
@@ -223,9 +315,9 @@ for (const handle of PROFILES) {
         console.log(`   ❌ Error: ${e.message}`);
       }
     }
-    
+
     console.log(`   ✅ @${handle} complete!\n`);
-    
+
   } catch (err) {
     console.log(`   ❌ Error: ${err.message}\n`);
   }
