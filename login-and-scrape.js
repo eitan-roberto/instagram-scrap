@@ -89,10 +89,8 @@ console.log('🔐 Instagram Login + Scraper\n');
 console.log('='.repeat(70));
 
 const context = await chromium.launchPersistentContext('./user_data', {
-  headless: true,
+  headless: false,
   viewport: { width: 1280, height: 800 },
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-});
 
 const page = await context.newPage();
 
