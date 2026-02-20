@@ -179,9 +179,17 @@ for (const handle of PROFILES) {
       await page.waitForTimeout(2000);
       
       const imageUrls = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('img'))
-          .filter(img => img.src && img.src.includes('cdninstagram.com') && img.src.includes('.jpg') && img.width > 300)
-          .map(img => img.src);
+        const urls = [];
+        document.querySelectorAll('img').forEach(img => {
+          const src = img.src;
+          if (src && (src.includes('instagram.com') || src.includes('fbcdn.net'))) {
+            // Filter out profile pictures and small images
+            if (!src.includes('/t51.2885-19/') && !src.includes('s150x150') && img.width > 200) {
+              urls.push(src);
+            }
+          }
+        });
+        return [...new Set(urls)];
       });
       
       posts.push({ shortcode, url: `https://www.instagram.com${link}`, images: imageUrls.slice(0, 5) });
