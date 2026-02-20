@@ -1,0 +1,14 @@
+```json
+{
+  "outfit_details": {
+    "top": "The model is wearing a cropped, short-sleeved top in a dark color, possibly black, with a double-breasted button-up design. The hem is cut in a slight curve, exposing the midriff.",
+    "bottom": "She is wearing a very short black mini-skirt with an asymmetric or wrap-style front, secured with two visible buttons on one side.",
+    "socks": "She has on knee-high socks with an argyle pattern in white, purple, and a lighter purple/lavender hue.",
+    "shoes": "She is wearing black leather loafers."
+  },
+  "pose": "The model is standing upright, facing the camera with her head tilted downwards, looking at her feet or the floor. Both hands are raised, with fingers intertwined in her disheveled brown hair, suggesting a gesture of frustration, exhaustion, or perhaps styling her hair.",
+  "setting": "The setting is a modern bathroom, specifically inside a shower enclosure with light-colored, possibly beige or cream-colored, large square tiles on the walls and floor. There is a built-in recessed shelf on the left wall containing various bathroom products (bottles, tubes, a razor). On the right, a chrome shower fixture with a flexible hose and a rainfall showerhead is mounted on the wall. A glass panel is partially visible on the right, separating the shower area, and a square drain is visible on the floor.",
+  "lighting": "The lighting appears to be artificial, likely overhead or integrated ceiling lights, providing bright and even illumination throughout the bathroom, with minimal harsh shadows.",
+  "camera_angle": "The camera angle is a straight-on, eye-level shot, capturing the model from a full-body perspective, showing her entire outfit and the surrounding shower area. The frame is slightly angled down to include her feet and the floor drain."
+}
+```

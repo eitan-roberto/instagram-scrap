@@ -1,0 +1,17 @@
+```json
+{
+  "outfit_details": {
+    "top": "A short-sleeved or sleeveless blouse in a black fabric with a dense white polka dot pattern. The blouse appears to be a tunic style, extending past the waist.",
+    "bottoms": "Black fitted trousers or flared pants.",
+    "shoes": "Black flat shoes with a small heel and a bow detail on the vamp.",
+    "accessories": [
+      "Multiple bracelets on the right wrist, including a gold-toned bangle and colorful string bracelets.",
+      "A bracelet on the left wrist, possibly gold-toned and delicate."
+    ]
+  },
+  "pose": "The model is positioned to the left of the frame, facing right. She is standing with her right leg firmly on the floor and her left leg bent at the knee, with her foot resting on the countertop. Her left arm is resting on her left thigh, and her right arm hangs loosely by her side. Her head is turned slightly to the right, and she is blowing a bubblegum bubble. Her reflection in the mirror shows her from the left side, also blowing a bubblegum bubble.",
+  "setting": "An interior space, likely a modern bathroom or a utility room, characterized by minimalist white cabinetry and countertops. There is a large mirror reflecting the space behind the model, revealing hints of an ongoing renovation or construction with yellow tape on the floor and plastic sheeting in the background. Exposed electrical outlets are visible on the wall and countertop.",
+  "lighting": "Bright, even, and natural-looking lighting, likely from overhead or a large window off-camera, illuminating the white surfaces and the model clearly.",
+  "camera_angle": "Eye-level or slightly below eye-level, capturing the model from a full-body perspective while also showcasing the setting and her reflection in the mirror."
+}
+```

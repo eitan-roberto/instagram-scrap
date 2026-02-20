@@ -1,0 +1,20 @@
+```json
+{
+  "outfit_details": {
+    "main_garment": "A tailored blazer featuring a small brown and beige houndstooth pattern. It has three gold or brass-colored buttons on each sleeve cuff and a single button closure at the front waist.",
+    "undergarment": "A plain white round-neck t-shirt or top visible underneath the blazer.",
+    "accessories": [
+      "A black fringed handbag with long, textured fringes, carried on the left arm.",
+      "A delicate gold-colored necklace with a small pendant (possibly a star or letter) on a thin chain.",
+      "Small gold-colored hoop earrings.",
+      "Sunglasses with clear or lightly tinted lenses perched on top of her head, underneath the balanced drink."
+    ],
+    "hair_style": "Long, brown hair with a middle part and face-framing layers or bangs, appearing slightly wavy.",
+    "nails": "Manicured nails with light or clear polish visible on the right hand."
+  },
+  "pose": "The model is positioned slightly off-center, leaning forward and facing towards the camera with her head slightly tilted. Her left arm is bent at the elbow, resting on a surface, with the fringed bag hanging. Her right arm is raised, holding a clear glass containing a drink with a lime wedge, which is balanced on her head. Her lips are pursed in a playful 'duck face' or 'kiss face' expression, and her eyes are looking directly at the camera.",
+  "setting": "An dimly lit indoor bar or pub. To the left, a wooden bar counter with a metal rail, bottles, and a large red piece of bar equipment (possibly a tap or machine) is visible. Another person is partially visible in the blurred background at the bar. The background on the right is very dark, showing reflections, possibly of a window or mirror, and a small table with a yellow-shaded lamp. The overall atmosphere is dark and moody.",
+  "lighting": "The scene is under dim, artificial lighting. The model's face and front of her body are relatively well-lit, suggesting a direct or frontal light source (possibly a camera flash or a nearby light), creating some contrast and highlighting her features. The background is mostly shrouded in deep shadows, with minimal ambient light sources visible, contributing to a moody ambiance.",
+  "camera_angle": "The camera is positioned at approximately eye-level or slightly above the model, capturing her from the mid-chest to the top of her head. This medium close-up shot creates a direct and engaging perspective with the model."
+}
+```

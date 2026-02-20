@@ -1,0 +1,19 @@
+```json
+{
+  "outfit_details": {
+    "top": "A cropped black blazer or short-sleeved jacket with a wide collar and multiple double-breasted black buttons. It exposes the midriff.",
+    "bottom": "A black mini skirt, possibly a skort, with a layered or wrapped front and some button detailing on the side.",
+    "socks": "Knee-high argyle pattern socks in white, light purple (lavender), and dark purple (violet).",
+    "shoes": "Black patent leather loafers.",
+    "accessories": [
+      "A thin, gold-colored bracelet on the right wrist.",
+      "A small, abstract tattoo on the outer left bicep/tricep area.",
+      "Blue nail polish visible on fingernails."
+    ]
+  },
+  "pose": "The model is standing upright, slightly turned to their left. Their head is tilted downwards and to the left, with their short, textured brown hair obscuring most of their face. Arms are relaxed at their sides, with hands slightly open and fingers extended. Weight appears evenly distributed.",
+  "setting": "A modern and minimalist bathroom or shower stall. The walls and floor are tiled with large, light beige or cream rectangular tiles. There is a recessed shelf in the left wall containing various personal care products (e.g., GUHL shampoo/conditioner). To the right, there's a chrome shower head, a flexible hose, and control panel. A metal drain is visible on the tiled floor.",
+  "lighting": "Bright, even, and diffused artificial lighting, likely from overhead fixtures. There are no harsh shadows, creating a clean and well-lit environment, characteristic of indoor bathroom lighting.",
+  "camera_angle": "The camera is positioned at approximately eye-level or slightly below, capturing a full-body shot of the model. The angle is straight-on, with a subtle upward tilt that includes the model's entire outfit while slightly cropping the very top of the head due to the head tilt and hair."
+}
+```

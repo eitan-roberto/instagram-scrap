@@ -1,0 +1,17 @@
+```json
+{
+  "outfit_details": {
+    "headwear": "A knit beanie with a multi-colored plaid-like pattern in shades of cream, beige, brown, and red.",
+    "top": "A long-sleeved top or jacket in a rich, deep red color, possibly velvet or a similar soft, textured fabric. The sleeves appear to have a slight flare or bell shape at the cuffs, and there's subtle embroidery or texture on the fabric.",
+    "bottoms": "Light-colored, possibly off-white or light grey, pants or skirt, largely obscured by the top.",
+    "accessories": [
+      "Vibrant blue nail polish on both hands.",
+      "Multiple bracelets on the right wrist, including a thin gold chain bracelet, a pink/purple braided bracelet, and another darker colored bracelet."
+    ]
+  },
+  "pose": "The model is kneeling or crouching on the grass, looking directly up at the camera. Her hands are brought up to her face, resting on her cheeks or chin, creating a pensive or slightly expressive gaze.",
+  "setting": "An outdoor setting on a lush green grass lawn, with scattered dry brown and orange leaves on the ground, suggesting an autumn or fall season. To the right of the model, there is a plum or dusty rose-colored outdoor chair made of woven wicker or a similar material.",
+  "lighting": "Bright, natural daylight, casting soft and even illumination on the scene. There are subtle shadows, indicating an overhead or slightly angled light source, highlighting textures and colors without harshness.",
+  "camera_angle": "A high-angle shot, looking down from above at the model and the chair, making the model appear to be looking up directly at the viewer."
+}
+```

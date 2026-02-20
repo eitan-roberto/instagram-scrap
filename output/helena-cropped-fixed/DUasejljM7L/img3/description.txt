@@ -1,0 +1,18 @@
+**JSON Response:**
+
+```json
+{
+  "model_present": true,
+  "outfit_details": {
+    "top": "Cropped black short-sleeved top with a double-breasted button front design.",
+    "bottom": "Black mini skirt with a wrapped or asymmetrical hemline and side buttons.",
+    "socks": "Knee-high or over-the-calf socks with an argyle pattern in white/cream, purple, and light purple stripes/diamonds.",
+    "shoes": "Black leather loafers.",
+    "accessories": "Gold-colored bracelets on the right wrist."
+  },
+  "pose": "The model is standing facing forward, looking downwards, with both hands raised and gripping her hair as if disheveling or fixing it. Her arms are bent at the elbows, and her shoulders are slightly hunched.",
+  "setting": "An indoor bathroom, specifically within a walk-in shower area. The walls are tiled with large, light beige/cream square tiles. There is a recessed niche in the wall to the left, containing various toiletries (bottles, a razor, tubes). To the right, there is a modern chrome shower head mounted on a sliding rail, with a thermostatic mixer tap below it. A clear glass shower screen is partially visible on the left and running across the foreground. The floor is also tiled in a similar light color, with a square metal drain visible.",
+  "lighting": "Even, bright indoor lighting, likely from overhead fixtures, casting minimal harsh shadows. The overall illumination is soft and diffused, highlighting the clean surfaces of the bathroom.",
+  "camera_angle": "Eye-level or slightly low-angle shot, looking directly at the model. The camera is positioned to capture the full body of the model from the chest down, showing the head and hair at the top of the frame and the feet at the bottom."
+}
+```

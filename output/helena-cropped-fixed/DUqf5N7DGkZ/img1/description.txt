@@ -1,0 +1,9 @@
+```json
+{
+  "outfit_details": "The model wears a knitted beanie with a multi-toned plaid or patterned design, featuring shades of beige, brown, red, and off-white. Her top is a deep red, possibly velvet or corduroy, long-sleeved jacket or shirt, worn with a relaxed fit. Below the red top, a glimpse of a light-colored (possibly white or light grey) skirt or shorts is visible. Accessories include multiple thin bracelets on her left wrist, colored purple, orange, and a gold-toned chain, and she has dark blue nail polish.",
+  "pose": "The model is positioned on her knees or in a low crouch on the grass. She is looking directly up at the camera with a pensive or slightly melancholic expression. Her hands are placed on either side of her face, gently framing it with her fingers slightly spread, drawing attention to her face and eyes.",
+  "setting": "The setting is outdoors, on a vibrant green lawn. There are scattered dry, brown leaves on the grass, suggesting either an autumn season or a location with surrounding deciduous trees. To the model's right, there is a distinct, light mauve or dusty rose-colored outdoor chair made of woven material, featuring a flared design for the back and armrests, and sturdy legs.",
+  "lighting": "The lighting is natural and appears soft and diffused, likely from an overcast sky or indirect sunlight. The model's face is evenly lit with subtle highlights and shadows that define her features without harshness. The grass shows natural variations in light and shadow, indicating an outdoor environment.",
+  "camera_angle": "The camera angle is a high-angle shot, positioned directly above or slightly to the front-top of the model, looking down. This perspective emphasizes the top of her head, the beanie, and the overall ground setting, making the model appear somewhat smaller in relation to her surroundings."
+}
+```

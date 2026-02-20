@@ -1,0 +1,9 @@
+```json
+{
+  "outfit_details": "The model is wearing a dark-colored (likely black or navy) sleeveless or short-sleeved dress adorned with small white polka dots. Underneath, she wears black trousers or leggings. Her footwear consists of black block-heeled shoes featuring a small bow detail on the front. Accessories include a gold bracelet on her left wrist and several thin, colorful (predominantly red/pink/burgundy) bracelets on her right wrist.",
+  "pose": "The model is lying prone on a flat, white surface, likely a countertop or vanity. Her upper body is propped up by her right elbow, with her head gently resting on her right hand. She gazes directly at the camera with a relaxed, slightly contemplative expression. Her left arm extends forward on the surface. Her legs are bent at the knees and elevated, with her feet pointing upwards.",
+  "setting": "The photo is taken in an interior space, possibly a bathroom or kitchen, that appears to be in the process of renovation or construction. The walls are stark white and unadorned. A large mirror behind the model reflects parts of the room, including a silver ladder, suggesting ongoing work. Further back in the reflection, a shower area or similar section is covered with clear plastic sheeting for protection. Electrical outlets are visible on the wall. The floor is light-colored (possibly concrete or light tile) and marked with yellow painter's tape, reinforcing the construction theme. White cabinets or drawers are situated beneath the surface the model is lying on.",
+  "lighting": "The lighting is bright, even, and diffuse, suggesting natural light from an unseen window. The space is uniformly illuminated, emphasizing the clean, white surfaces, with no harsh shadows.",
+  "camera_angle": "The camera angle is roughly eye-level with the model's face as she lies down, providing a straight-on, full-body shot from a moderately close distance."
+}
+```

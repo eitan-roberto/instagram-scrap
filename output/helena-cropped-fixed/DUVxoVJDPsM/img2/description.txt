@@ -1,0 +1,17 @@
+```json
+{
+  "outfit_details": {
+    "bodysuit": "A light grey-blue sleeveless bodysuit or leotard with a low-cut scoop back. The fabric appears to have a textured, possibly ribbed or terry-like, finish.",
+    "leggings": "Bright pink full-length tights or leggings worn underneath the bodysuit. A subtle black outline graphic of two cherries is visible on the left hip/upper thigh area.",
+    "footwear": "Light beige or off-white sneakers with textured, light brown (gum sole) outsoles. The model is sitting on her heels, revealing the soles of the shoes.",
+    "accessories": {
+      "right_wrist": "A stack of bracelets, including a prominent gold-toned bracelet with three large, spherical beads (possibly pearls or metallic). There is also a thin, reddish string bracelet with a small star-shaped charm and a purple string bracelet.",
+      "left_wrist": "A simple, thin gold-toned cuff or bangle bracelet."
+    }
+  },
+  "pose": "The model is seated on a blue yoga mat, kneeling with her feet tucked under her or sitting on her heels. Her back is towards the camera. Her arms are raised above her head, bent at the elbows, with hands clasped or resting on opposite upper arms/elbows in a triceps or shoulder stretch.",
+  "setting": "An indoor setting with a plain, light beige or off-white textured wall as the background. A white baseboard runs along the bottom of the wall. The floor is made of light brown wooden planks. A bright blue ridged yoga or exercise mat is laid on the floor, on which the model is positioned.",
+  "lighting": "Soft, even, natural-looking lighting illuminates the scene, casting minimal shadows. The light appears to be coming from a front or slightly overhead direction, highlighting the contours of the model's back and arms.",
+  "camera_angle": "The camera is positioned at a medium height, roughly at the model's mid-back level, looking directly at her from behind. This creates a full-body shot from the waist up, focusing on the pose and outfit details from the rear."
+}
+```

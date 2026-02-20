@@ -1,34 +1,39 @@
+#!/usr/bin/env node
+/**
+ * Single Post Processor - Process one post at a time with consistency
+ * Usage: node process-single-post.js <post-shortcode>
+ * Example: node process-single-post.js DUlIOVJDLnS
+ */
+
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PROXY_URL = 'socks5://oH2XZer6WzFTaY299bVr9NwL:QrYkpu4itrGTyXnxXAQK4U11@us.socks.nordhold.net:1080';
 const agent = new SocksProxyAgent(PROXY_URL);
 const API_KEY = 'AIzaSyB7olaBwD3-zXFPfDTTXa-L20AytQUeRmM';
 
-const identityImagePath = './src/models/israeli-cute.png';
-const outputDir = './output/helena-cropped';
-const csvPath = './data/helenabeckmann-scraped.csv';
+const identityImagePath = path.join(__dirname, 'src/models/israeli-cute.png');
+const csvPath = path.join(__dirname, 'data', 'helenabeckmann-scraped.csv');
+const outputDir = path.join(__dirname, 'output', 'helena-cropped');
 
 // Config
-const IMAGES_PER_POST = 3; // Max 3 images per post
-const TARGET_RATIO = 4/5; // 4:5 for Instagram feed
-const SIDE_CROP_PERCENT = 4; // Crop 4% from each side
-
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
-
-console.log('🎨 FULL RUN with 4:5 Top + Side Crop\n');
-console.log('==============================================\n');
-console.log(`📸 Generating images...`);
-console.log(`✂️  Auto-cropping to 4:5 from top + ${SIDE_CROP_PERCENT}% from each side\n`);
+const IMAGES_PER_POST = 3;
+const TARGET_RATIO = 4/5;
+const SIDE_CROP_PERCENT = 4;
 
 function downloadImage(url) {
   return new Promise((resolve, reject) => {
     https.get(url, { agent }, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return downloadImage(res.headers.location).then(resolve).catch(reject);
+      }
       const chunks = [];
       res.on('data', chunk => chunks.push(chunk));
       res.on('end', () => resolve(Buffer.concat(chunks).toString('base64')));
@@ -36,7 +41,9 @@ function downloadImage(url) {
   });
 }
 
-function callGemini(payload, model = 'gemini-2.5-flash') {
+async function callGemini(payload, model) {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+  
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: 'generativelanguage.googleapis.com',
@@ -61,61 +68,83 @@ function callGemini(payload, model = 'gemini-2.5-flash') {
   });
 }
 
-// Crop to 4:5 from top + crop sides
+function parseCSV(csvPath) {
+  const content = fs.readFileSync(csvPath, 'utf8');
+  const lines = content.trim().split('\n');
+  
+  const posts = [];
+  for (let i = 1; i < lines.length; i++) {
+    const parts = lines[i].split(',');
+    if (parts.length < 7) continue;
+    
+    const imageUrls = parts[6].split('|').filter(u => u && u.startsWith('http'));
+    
+    posts.push({
+      url: parts[0],
+      shortcode: parts[1],
+      caption: parts[2],
+      date: parts[3],
+      likes: parts[4],
+      imageCount: parts[5],
+      images: imageUrls
+    });
+  }
+  return posts;
+}
+
 async function cropTo45FromTop(inputPath, outputPath) {
   try {
-    const metadata = await sharp(inputPath).metadata();
-    const width = metadata.width;
-    const height = metadata.height;
+    const image = sharp(inputPath);
+    const metadata = await image.metadata();
     
-    // Calculate new height for 4:5 ratio
-    const newHeight = Math.floor(width / TARGET_RATIO);
+    const originalWidth = metadata.width;
+    const originalHeight = metadata.height;
     
-    // Calculate side crop (1% from each side)
-    const newWidth = Math.floor(width * (1 - SIDE_CROP_PERCENT * 2 / 100));
-    const leftOffset = Math.floor((width - newWidth) / 2);
+    const sideCrop = Math.round(originalWidth * (SIDE_CROP_PERCENT / 100));
+    const croppedWidth = originalWidth - (sideCrop * 2);
+    const targetHeight = Math.round(croppedWidth / TARGET_RATIO);
+    const cropHeight = Math.min(targetHeight, originalHeight);
     
-    if (newHeight < height) {
-      // Extract from top + crop sides
-      await sharp(inputPath)
-        .extract({ left: leftOffset, top: 0, width: newWidth, height: newHeight })
-        .toFile(outputPath);
-      console.log(`   ✂️  Cropped: ${newWidth}x${newHeight} (4:5 from top + ${SIDE_CROP_PERCENT}% sides)`);
-    } else {
-      // Image is already 4:5 or taller, just crop sides
-      await sharp(inputPath)
-        .extract({ left: leftOffset, top: 0, width: newWidth, height: height })
-        .toFile(outputPath);
-      console.log(`   ✂️  Cropped sides: ${newWidth}x${height} (kept height)`);
-    }
+    await image
+      .extract({
+        left: sideCrop,
+        top: 0,
+        width: croppedWidth,
+        height: cropHeight
+      })
+      .toFile(outputPath);
+    
+    console.log(`   ✂️  Cropped: ${croppedWidth}x${cropHeight} (4:5 from top + 4% sides)`);
+    return true;
   } catch (e) {
     console.log(`   ⚠️  Crop failed: ${e.message}, copying original`);
     fs.copyFileSync(inputPath, outputPath);
+    return false;
   }
 }
 
-async function processPost(post, postIndex, totalPosts) {
+async function processSinglePost(shortcode) {
+  const posts = parseCSV(csvPath);
+  const post = posts.find(p => p.shortcode === shortcode);
+  
+  if (!post) {
+    console.log(`❌ Post ${shortcode} not found in CSV`);
+    process.exit(1);
+  }
+  
+  console.log(`\n${'='.repeat(70)}`);
+  console.log(`Processing Post: ${post.shortcode}`);
+  console.log(`Date: ${post.date}`);
+  console.log(`Images: ${post.images.length} (processing up to ${IMAGES_PER_POST})`);
+  console.log('='.repeat(70));
+  
   const postDir = path.join(outputDir, post.shortcode);
   if (!fs.existsSync(postDir)) {
     fs.mkdirSync(postDir, { recursive: true });
   }
-
-  console.log(`\n${'='.repeat(70)}`);
-  console.log(`[${postIndex}/${totalPosts}] Post: ${post.shortcode}`);
-  console.log(`Date: ${post.date}`);
-  console.log(`Images: ${post.images.length} (processing up to ${IMAGES_PER_POST})`);
-  console.log('='.repeat(70));
-
-  const manifest = {
-    shortcode: post.shortcode,
-    originalUrl: post.url,
-    date: post.date,
-    caption: post.caption,
-    processedAt: new Date().toISOString(),
-    images: []
-  };
-
+  
   const imagesToProcess = post.images.slice(0, IMAGES_PER_POST);
+  let generatedCount = 0;
   
   for (let i = 0; i < imagesToProcess.length; i++) {
     const imgUrl = imagesToProcess[i];
@@ -127,41 +156,22 @@ async function processPost(post, postIndex, totalPosts) {
     if (!fs.existsSync(imgDir)) {
       fs.mkdirSync(imgDir, { recursive: true });
     }
-
-    // Skip img1 if already exists (we're only regenerating img2/img3 for consistency)
+    
     const croppedPathCheck = path.join(imgDir, 'generated-cropped.jpg');
-    if (imgIndex === 1 && fs.existsSync(croppedPathCheck)) {
-      console.log('     ⏭️  img1 already exists, skipping...');
-      manifest.images.push({
-        index: imgIndex,
-        originalUrl: imgUrl,
-        status: 'skipped',
-        description: 'Already exists'
-      });
+    if (fs.existsSync(croppedPathCheck)) {
+      console.log('     ⏭️  Already exists, skipping...');
+      generatedCount++;
       continue;
     }
-
-    const imgResult = {
-      index: imgIndex,
-      originalUrl: imgUrl,
-      status: 'pending',
-      description: null,
-      generatedPath: null,
-      croppedPath: null,
-      error: null
-    };
-
+    
     try {
-      // Step 1: Download
       console.log('     📥 Downloading reference...');
       const instagramB64 = await downloadImage(imgUrl);
       const identityB64 = fs.readFileSync(identityImagePath).toString('base64');
       
-      // Save original reference
       fs.writeFileSync(path.join(imgDir, 'original-reference.jpg'), Buffer.from(instagramB64, 'base64'));
       console.log('     ✅ Loaded');
-
-      // Step 2: Describe
+      
       console.log('     📝 Analyzing...');
       const describePrompt = `Analyze this fashion photo and describe it in detail for AI image generation. Include:
 - The exact outfit (clothing type, color, style, fit)
@@ -183,13 +193,10 @@ Provide the description in a format suitable for an AI image generation prompt.`
 
       const description = describeResponse.candidates?.[0]?.content?.parts?.[0]?.text || '';
       fs.writeFileSync(path.join(imgDir, 'description.txt'), description);
-      imgResult.description = description.substring(0, 200) + '...';
       console.log('     ✅ Description saved');
-
-      // Step 3: Generate
+      
       console.log('     🎨 Generating...');
       
-      // For img2 and img3, use img1 as additional reference for consistency
       let img1B64 = null;
       let useImg1Reference = false;
       
@@ -239,17 +246,14 @@ Camera/Style Requirements:
 - No white borders or frames - full bleed image edge to edge`;
       }
 
-      // Build parts array - include img1 reference for img2/img3
       const parts = [{ text: generatePrompt }];
       
       if (useImg1Reference) {
-        // For img2/img3: include both identity and img1 reference
         parts.push({ inline_data: { mime_type: "image/jpeg", data: img1B64 } });
         parts.push({ text: "STYLE REFERENCE: Use this image's aesthetic, lighting, and overall look" });
         parts.push({ inline_data: { mime_type: "image/png", data: identityB64 } });
         parts.push({ text: "IDENTITY REFERENCE: Use this person's face and features" });
       } else {
-        // For img1: just identity reference
         parts.push({ inline_data: { mime_type: "image/png", data: identityB64 } });
       }
 
@@ -270,125 +274,46 @@ Camera/Style Requirements:
             const originalPath = path.join(imgDir, 'generated.jpg');
             const croppedPath = path.join(imgDir, 'generated-cropped.jpg');
             
-            // Save original
             fs.writeFileSync(originalPath, imgData);
-            imgResult.generatedPath = `img${imgIndex}/generated.jpg`;
             console.log(`     ✅ Generated: ${originalPath}`);
             
-            // Crop to 4:5 from top
             await cropTo45FromTop(originalPath, croppedPath);
-            imgResult.croppedPath = `img${imgIndex}/generated-cropped.jpg`;
             
             saved = true;
+            generatedCount++;
             break;
           }
         }
         
         if (!saved) {
-          imgResult.status = 'error';
-          imgResult.error = 'No image data';
-        } else {
-          imgResult.status = 'success';
+          console.log('     ❌ No image data in response');
         }
       } else if (candidate?.finishReason === 'IMAGE_SAFETY') {
-        imgResult.status = 'blocked';
-        imgResult.error = 'IMAGE_SAFETY';
-        fs.writeFileSync(path.join(imgDir, 'error.json'), JSON.stringify(generateResponse, null, 2));
         console.log('     ⚠️ BLOCKED by safety filter');
       } else {
-        imgResult.status = 'error';
-        imgResult.error = candidate?.finishReason || 'Unknown';
-        console.log(`     ⚠️ Failed: ${candidate?.finishReason}`);
+        console.log(`     ❌ Error: ${candidate?.finishReason || 'Unknown'}`);
       }
-
-    } catch (e) {
-      imgResult.status = 'error';
-      imgResult.error = e.message;
-      console.error(`     ❌ Error: ${e.message}`);
-    }
-
-    manifest.images.push(imgResult);
-
-    // Delay between images
-    if (i < imagesToProcess.length - 1) {
-      console.log('     ⏳ Waiting 2s...');
-      await new Promise(r => setTimeout(r, 2000));
+      
+      if (i < imagesToProcess.length - 1) {
+        console.log('     ⏳ Waiting 2s...');
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      
+    } catch (err) {
+      console.log(`     ❌ Error: ${err.message}`);
     }
   }
-
-  // Save manifest
-  fs.writeFileSync(path.join(postDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
   
-  const successful = manifest.images.filter(i => i.status === 'success').length;
-  console.log(`\n  📊 Results: ✅${successful}/${manifest.images.length}`);
-  
-  return manifest;
-}
-
-async function main() {
-  // Parse CSV
-  console.log('📂 Reading CSV...');
-  const csvContent = fs.readFileSync(csvPath, 'utf8');
-  const lines = csvContent.split('\n').slice(1);
-
-  const posts = [];
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const parts = line.split(',');
-    if (parts.length < 7) continue;
-
-    const url = parts[0];
-    const shortcode = parts[1];
-    const caption = parts[2]?.replace(/^"|"$/g, '') || '';
-    const date = parts[3];
-    const imageUrls = parts[6]?.split('|') || [];
-
-    const validImages = imageUrls.filter(u => 
-      u && u.includes('instagram.com') && !u.includes('giphy')
-    );
-
-    if (validImages.length > 0) {
-      posts.push({
-        shortcode,
-        url,
-        caption,
-        date,
-        images: validImages
-      });
-    }
-  }
-
-  console.log(`✅ Found ${posts.length} posts\n`);
-
-  // Process all posts
-  const allManifests = [];
-  
-  for (let i = 0; i < posts.length; i++) {
-    const manifest = await processPost(posts[i], i + 1, posts.length);
-    allManifests.push(manifest);
-    
-    if (i < posts.length - 1) {
-      console.log('\n⏳ Waiting 3s before next post...');
-      await new Promise(r => setTimeout(r, 3000));
-    }
-  }
-
-  // Final summary
-  console.log('\n' + '='.repeat(70));
-  console.log('FINAL SUMMARY');
+  console.log(`\n${'='.repeat(70)}`);
+  console.log(`✅ Post ${shortcode} complete: ${generatedCount}/${imagesToProcess.length} images`);
   console.log('='.repeat(70));
-
-  const totalImages = allManifests.reduce((sum, m) => sum + m.images.length, 0);
-  const totalSuccess = allManifests.reduce((sum, m) => 
-    sum + m.images.filter(i => i.status === 'success').length, 0);
-
-  console.log(`\nPosts: ${allManifests.length}`);
-  console.log(`Images: ${totalImages}`);
-  console.log(`✅ Successful: ${totalSuccess}`);
-  console.log(`\n📁 Output: ${outputDir}/`);
-  console.log(`✂️  All images cropped to 4:5 from top + ${SIDE_CROP_PERCENT}% from sides`);
-  console.log(`   Original: generated.jpg`);
-  console.log(`   Cropped:  generated-cropped.jpg (ready for Instagram)`);
 }
 
-main().catch(console.error);
+const shortcode = process.argv[2];
+if (!shortcode) {
+  console.log('Usage: node process-single-post.js <post-shortcode>');
+  console.log('Example: node process-single-post.js DUlIOVJDLnS');
+  process.exit(1);
+}
+
+processSinglePost(shortcode).catch(console.error);

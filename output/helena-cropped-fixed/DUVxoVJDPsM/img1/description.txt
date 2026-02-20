@@ -1,0 +1,22 @@
+```json
+{
+  "outfit_details": {
+    "top": "A light blue (possibly aqua or sky blue) ribbed or textured tank-style bodysuit/one-piece with thin straps and a scoop neckline.",
+    "bottom": "Hot pink opaque tights or leggings.",
+    "footwear": "White knee-high socks with three black stripes near the cuff (worn on the left leg). An off-white/beige Nike sneaker with a black swoosh and gum sole (held by the right hand).",
+    "accessories": [
+      "Gold hoop earrings",
+      "A delicate gold bracelet with small charms on the left wrist",
+      "Light pink/nude nail polish on the fingers"
+    ]
+  },
+  "pose": "The model is seated on a blue yoga mat in a stretching or yoga pose. Her left leg is bent with the knee on the mat and the foot extended backward. Her right leg is also bent, with the knee on the mat, and she is holding her right foot with her right hand, pulling it towards her torso. Her torso is slightly twisted to the right, and her head is turned to the right, looking off-camera. Her left hand rests flat on the mat in front of her.",
+  "setting": {
+    "environment": "Indoors, likely a room for exercise.",
+    "background": "A plain, light-colored (off-white or light beige) textured wall.",
+    "props": "A ribbed, bright blue yoga or exercise mat placed on a light brown wooden floor."
+  },
+  "lighting": "Soft, bright, and even lighting, suggesting natural light from a window or diffused studio lighting. There are no harsh shadows, and the subject is well-lit.",
+  "camera_angle": "The camera is at an eye-level or slightly elevated angle relative to the model's seated position, capturing a medium shot that includes most of her body and the immediate surroundings."
+}
+```

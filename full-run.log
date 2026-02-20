@@ -1,0 +1,43 @@
+🎨 FULL RUN with 4:5 Top + Side Crop
+
+==============================================
+
+📸 Generating images...
+✂️  Auto-cropping to 4:5 from top + 4% from each side
+
+📂 Reading CSV...
+✅ Found 10 posts
+
+
+======================================================================
+[1/10] Post: DUvfLmtjEhS
+Date: 2026-02-14T14:39:22.000Z
+Images: 10 (processing all)
+======================================================================
+
+  📸 Image 1/10
+     📥 Downloading reference...
+     ✅ Loaded
+     📝 Analyzing...
+     ✅ Description saved
+     🎨 Generating...
+     ✅ Generated: output/helena-cropped/DUvfLmtjEhS/img1/generated.jpg
+   ✂️  Cropped: 824x1120 (4:5 from top + 4% sides)
+     ⏳ Waiting 2s...
+
+  📸 Image 2/10
+     📥 Downloading reference...
+     ✅ Loaded
+     📝 Analyzing...
+     ✅ Description saved
+     🎨 Generating...
+     ✅ Generated: output/helena-cropped/DUvfLmtjEhS/img2/generated.jpg
+   ✂️  Cropped: 824x1120 (4:5 from top + 4% sides)
+     ⏳ Waiting 2s...
+
+  📸 Image 3/10
+     📥 Downloading reference...
+     ✅ Loaded
+     📝 Analyzing...
+     ✅ Description saved
+     🎨 Generating...

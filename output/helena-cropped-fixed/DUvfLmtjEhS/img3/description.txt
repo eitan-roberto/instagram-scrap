@@ -1,0 +1,20 @@
+```json
+{
+  "presence_of_model": "YES",
+  "gender": "female",
+  "age_group": "young adult",
+  "outfit_details": {
+    "headwear": "A colorful knitted beanie, featuring a plaid or checkered pattern in shades of cream, beige, red, and brown. It appears to be a soft, slouchy style.",
+    "top": "A long-sleeved top or jacket in a rich, solid red color, possibly velvet or a similar soft texture, with wide sleeves. There are subtle embroidered or embossed patterns visible on the fabric.",
+    "bottoms": "Partially visible light-colored bottoms, possibly shorts or a skirt, peeking out from under the red top. They appear to be in a neutral tone like cream or light grey.",
+    "accessories": [
+      "Multiple bracelets on the right wrist, including beaded and string bracelets in various colors like purple, orange, and gold, along with a delicate gold chain bracelet with charms.",
+      "Blue nail polish on the fingernails."
+    ]
+  },
+  "pose": "The model is positioned on the ground, possibly kneeling or sitting with legs tucked. Her head is tilted slightly back, looking up towards the camera. Her hands are cupped around her chin and cheeks, creating a somewhat pensive or playful expression. Her shoulders are slightly hunched forward.",
+  "setting": "An outdoor setting on a vibrant green lawn. The grass is well-maintained but shows some scattered dry leaves, suggesting an autumn season. The background consists solely of the grass, without any distinct structures or additional elements.",
+  "lighting": "Natural daylight, casting soft shadows. The lighting appears relatively even, suggesting an overcast day or indirect sunlight. There are no harsh highlights or deep shadows.",
+  "camera_angle": "High-angle shot, looking directly down at the model from above. This perspective makes the model appear smaller and emphasizes the ground around her."
+}
+```

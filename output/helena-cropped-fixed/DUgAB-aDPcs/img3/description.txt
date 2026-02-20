@@ -1,0 +1,15 @@
+```json
+{
+  "outfit_details": {
+    "top": "A cropped black short-sleeved top, styled like a waistcoat or vest with multiple black buttons down the front, exposing the midriff.",
+    "bottom": "A black mini-skirt with an asymmetric or wrap-style detail on the left side, featuring two small black buttons.",
+    "socks": "White knee-high or over-the-calf socks with a purple argyle pattern.",
+    "shoes": "Black leather loafers.",
+    "accessories": "Gold-colored bracelets on the right wrist."
+  },
+  "pose": "The model is standing facing forward, with both arms raised, hands buried in her messy, brown hair, as if ruffling it. Her head is tilted downwards, obscuring her face.",
+  "setting": "The photo is taken inside a modern, tiled shower stall. The walls and floor are covered with light, neutral-colored square tiles. There is a built-in shower niche on the left wall containing various toiletries (shampoo, conditioner, razor, etc.). A chrome shower head and a thermostatic mixer tap are mounted on the right wall. A glass shower partition is visible on both sides of the frame. A square drain is on the floor in the foreground.",
+  "lighting": "Soft, even, overhead indoor lighting illuminates the scene, casting minimal shadows and highlighting the details of the outfit and setting.",
+  "camera_angle": "The camera is positioned at a slightly high-angle, looking down slightly, capturing a full-body shot of the model from head to toe."
+}
+```

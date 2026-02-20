@@ -1,0 +1,9 @@
+```json
+{
+  "outfit_details": "The model is wearing a black, short-sleeved, cropped top with a double-breasted or vest-like button-front design, exposing a sliver of her midriff. Below, she wears a black mini skirt, possibly a skort given the slight wrap-around or asymmetrical detail on one side. Her legs are adorned with knee-high argyle socks featuring white, purple, and a lighter contrasting color pattern. She completes the look with classic black loafers. A subtle gold-colored bracelet is visible on her right wrist.",
+  "pose": "The model stands upright, facing the camera with her head tilted downwards. Both of her hands are raised, running through or gripping her hair, which appears deliberately tousled or messy.",
+  "setting": "The setting is a contemporary bathroom, specifically inside a walk-in shower enclosure. The walls and floor are tiled with large, light-colored (cream or beige) tiles. A built-in wall niche on the left side holds various bath products. Chrome shower fixtures, including a handheld showerhead on an adjustable rail and a thermostatic mixer, are visible on the right wall. A clear glass shower partition extends from the floor upwards on the right, and a square drain is visible on the shower floor.",
+  "lighting": "The lighting is bright and even, likely artificial overhead bathroom lighting, illuminating the scene without harsh shadows, creating a clean and well-lit environment.",
+  "camera_angle": "The camera angle is straight on, capturing the model from a full-body perspective, from slightly above her head down to her feet."
+}
+```
