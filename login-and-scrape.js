@@ -90,7 +90,8 @@ console.log('='.repeat(70));
 
 const context = await chromium.launchPersistentContext('./user_data', {
   headless: false,
-  viewport: { width: 1280, height: 800 },
+  viewport: { width: 1280, height: 800 }
+});
 
 const page = await context.newPage();
 
