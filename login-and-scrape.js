@@ -13,8 +13,9 @@ const REPO_DIR = './repository';
 const OUTFITS_DIR = path.join(REPO_DIR, 'outfits');
 const SCENES_DIR = path.join(REPO_DIR, 'scenes');
 const RAW_DIR = path.join(REPO_DIR, 'raw');
+const DEBUG_DIR = path.join(REPO_DIR, 'debug');
 
-[REPO_DIR, OUTFITS_DIR, SCENES_DIR, RAW_DIR].forEach(dir => {
+[REPO_DIR, OUTFITS_DIR, SCENES_DIR, RAW_DIR, DEBUG_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
@@ -92,22 +93,28 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code blocks, no extra te
 
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
+    // Save raw response for debugging
+    const rawResponse = {
+      fullResponse: text,
+      timestamp: new Date().toISOString()
+    };
+
     // Try to extract JSON from code blocks first
     const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (codeBlockMatch) {
-      return JSON.parse(codeBlockMatch[1].trim());
+      return { ...JSON.parse(codeBlockMatch[1].trim()), _debug: rawResponse };
     }
 
     // Try to find JSON object directly
     const jsonMatch = text.match(/(\{[\s\S]*\})/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[1].trim());
+      return { ...JSON.parse(jsonMatch[1].trim()), _debug: rawResponse };
     }
 
     // If all else fails, return raw text
-    return { raw: text.substring(0, 500) };
+    return { raw: text.substring(0, 500), _debug: rawResponse };
   } catch (e) {
-    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response' };
+    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response', _debug: { error: e.message, fullResponse: text } };
   }
 }
 
@@ -154,22 +161,28 @@ IMPORTANT: Return ONLY the JSON object, no markdown, no code blocks, no extra te
 
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text || '';
     
+    // Save raw response for debugging
+    const rawResponse = { 
+      fullResponse: text,
+      timestamp: new Date().toISOString()
+    };
+    
     // Try to extract JSON from code blocks first
     const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (codeBlockMatch) {
-      return JSON.parse(codeBlockMatch[1].trim());
+      return { ...JSON.parse(codeBlockMatch[1].trim()), _debug: rawResponse };
     }
     
     // Try to find JSON object directly
     const jsonMatch = text.match(/(\{[\s\S]*\})/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[1].trim());
+      return { ...JSON.parse(jsonMatch[1].trim()), _debug: rawResponse };
     }
     
     // If all else fails, return raw text
-    return { raw: text.substring(0, 500) };
+    return { raw: text.substring(0, 500), _debug: rawResponse };
   } catch (e) {
-    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response' };
+    return { error: 'Failed to parse', raw: text?.substring(0, 500) || 'No response', _debug: { error: e.message, fullResponse: text } };
   }
 }
 
@@ -290,7 +303,9 @@ for (const handle of PROFILES) {
       if (post.images.length === 0) continue;
 
       const postScenesDir = path.join(handleScenesDir, post.shortcode);
+      const postDebugDir = path.join(DEBUG_DIR, handle, post.shortcode);
       if (!fs.existsSync(postScenesDir)) fs.mkdirSync(postScenesDir, { recursive: true });
+      if (!fs.existsSync(postDebugDir)) fs.mkdirSync(postDebugDir, { recursive: true });
 
       console.log(`\n   Processing ${post.shortcode}...`);
 
@@ -299,7 +314,14 @@ for (const handle of PROFILES) {
         console.log('   📸 Outfit...');
         const img1B64 = await downloadImage(post.images[0]);
         const outfit = await extractOutfit(img1B64);
-        fs.writeFileSync(path.join(handleOutfitsDir, `${post.shortcode}.json`), JSON.stringify({ handle, shortcode: post.shortcode, source_url: post.images[0], outfit }, null, 2));
+        
+        // Save outfit data
+        fs.writeFileSync(path.join(handleOutfitsDir, `${post.shortcode}.json`), JSON.stringify({ handle, shortcode: post.shortcode, source_url: post.images[0], outfit: outfit._debug ? { ...outfit, _debug: undefined } : outfit }, null, 2));
+        
+        // Save debug raw response
+        if (outfit._debug) {
+          fs.writeFileSync(path.join(postDebugDir, 'outfit-raw.json'), JSON.stringify(outfit._debug, null, 2));
+        }
         console.log('   ✅ Outfit saved');
 
         // Scenes from all images
@@ -307,7 +329,14 @@ for (const handle of PROFILES) {
           console.log(`   📸 Scene img${i+1}...`);
           const imgB64 = await downloadImage(post.images[i]);
           const scene = await extractScene(imgB64);
-          fs.writeFileSync(path.join(postScenesDir, `img${i+1}.json`), JSON.stringify({ handle, shortcode: post.shortcode, image_index: i+1, source_url: post.images[i], scene }, null, 2));
+          
+          // Save scene data
+          fs.writeFileSync(path.join(postScenesDir, `img${i+1}.json`), JSON.stringify({ handle, shortcode: post.shortcode, image_index: i+1, source_url: post.images[i], scene: scene._debug ? { ...scene, _debug: undefined } : scene }, null, 2));
+          
+          // Save debug raw response
+          if (scene._debug) {
+            fs.writeFileSync(path.join(postDebugDir, `scene-img${i+1}-raw.json`), JSON.stringify(scene._debug, null, 2));
+          }
           console.log('   ✅ Scene saved');
           await new Promise(r => setTimeout(r, 1000));
         }
